@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -15,6 +15,10 @@
     <!-- Ícones (Lucide) -->
     <script src="https://unpkg.com/lucide-react@latest/dist/lucide-react.js"></script>
     <script src="https://unpkg.com/lucide-icons@latest/dist/lucide.min.js"></script>
+    <!-- Export libs -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.28/dist/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         /* Estilo base com a fonte Inter */
@@ -33,30 +37,67 @@
         }
 
         .btn-zumba {
-            @apply px-6 py-3 font-bold text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105;
-            background: linear-gradient(135deg, #ec4899, #e11d48); /* Pink -> Rose */
+            padding: 0.75rem 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: transform 300ms ease-in-out, background-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
+            background: linear-gradient(135deg, #ec4899, #e11d48);
         }
+        .btn-zumba:hover { transform: scale(1.05); }
         
         .btn-zumba-alt {
-            @apply px-6 py-3 font-bold text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105;
-            background: linear-gradient(135deg, #a3e635, #4d7c0f); /* Verde-limão -> Verde escuro */
+            padding: 0.75rem 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: transform 300ms ease-in-out, background-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
+            background: linear-gradient(135deg, #a3e635, #4d7c0f);
         }
+        .btn-zumba-alt:hover { transform: scale(1.05); }
         
         .btn-zumba-secondary {
-             @apply px-4 py-2 font-semibold text-gray-700 bg-gray-200 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:bg-gray-300 hover:scale-105;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            color: #374151;
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            transition: background-color 300ms ease-in-out, transform 300ms ease-in-out;
         }
+        .btn-zumba-secondary:hover { background-color: #d1d5db; transform: scale(1.05); }
 
         /* Estilo para inputs */
         .form-input {
-            @apply w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            margin-top: 0.25rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+            outline: none;
         }
+        .form-input:focus { box-shadow: 0 0 0 2px #ec4899; border-color: transparent; }
         
         .form-select {
-             @apply w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            margin-top: 0.25rem;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+            outline: none;
         }
+        .form-select:focus { box-shadow: 0 0 0 2px #ec4899; border-color: transparent; }
 
         .form-label {
-            @apply block text-sm font-medium text-gray-700;
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
         }
 
         /* Ocultar/Mostrar seções */
@@ -66,7 +107,14 @@
 
         /* Estilo do Modal */
         #details-modal {
-            @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 transition-opacity duration-300;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.75);
+            transition: opacity 300ms ease-in-out;
         }
     </style>
 </head>
@@ -402,7 +450,18 @@
 
             <!-- Seção: Inscrições Pendentes -->
             <div class="p-6 bg-white rounded-lg shadow-lg">
-                <h2 class="pb-4 text-2xl font-bold border-b border-gray-200">Inscrições Pendentes</h2>
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between pb-4 border-b border-gray-200">
+                    <h2 class="text-2xl font-bold">Inscrições Pendentes</h2>
+                    <div class="flex gap-2 flex-col md:flex-row">
+                        <input id="admin-search" type="text" class="form-input md:w-64" placeholder="Buscar por nome, email, CPF, cidade">
+                        <select id="admin-sort" class="form-select md:w-48">
+                            <option value="date_desc" selected>Ordenar: Data (recente)</option>
+                            <option value="date_asc">Ordenar: Data (antiga)</option>
+                            <option value="name_asc">Ordenar: Nome (A→Z)</option>
+                            <option value="name_desc">Ordenar: Nome (Z→A)</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="pending-registrations-list" class="mt-4 space-y-4">
                     <!-- Inscrições pendentes serão injetadas aqui -->
                     <p id="no-pending-message">Não há inscrições pendentes no momento.</p>
@@ -413,7 +472,32 @@
             <div class="p-6 bg-white rounded-lg shadow-lg">
                 <h2 class="pb-4 text-2xl font-bold border-b border-gray-200">Gerador de Relatórios</h2>
                 <div class="mt-4 space-y-4">
-                    <p>Selecione os campos que deseja incluir no relatório (de todos os cadastros <span class="font-bold text-green-600">aprovados</span>):</p>
+                    <p>Selecione os campos e filtros do relatório:</p>
+
+                    <!-- Filtros -->
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                        <div>
+                            <label class="form-label" for="report-status-filter">Status</label>
+                            <select id="report-status-filter" class="form-select">
+                                <option value="approved" selected>Aprovados</option>
+                                <option value="pending">Pendentes</option>
+                                <option value="rejected">Rejeitados</option>
+                                <option value="all">Todos</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="report-date-start">Data início (criação)</label>
+                            <input type="date" id="report-date-start" class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label" for="report-date-end">Data fim (criação)</label>
+                            <input type="date" id="report-date-end" class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label" for="report-city-filter">Cidade</label>
+                            <input type="text" id="report-city-filter" class="form-input" placeholder="Filtrar por cidade">
+                        </div>
+                    </div>
                     
                     <!-- Checkboxes dos Campos -->
                     <div id="report-fields" class="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
@@ -430,6 +514,13 @@
                         <label class="flex items-center"><input type="checkbox" value="hipertenso" class="mr-2 rounded text-pink-500"> Hipertenso</label>
                         <label class="flex items-center"><input type="checkbox" value="diabetico" class="mr-2 rounded text-pink-500"> Diabético</label>
                         <label class="flex items-center"><input type="checkbox" value="cardiaco" class="mr-2 rounded text-pink-500"> Cardíaco</label>
+                        <label class="flex items-center"><input type="checkbox" value="cpf" class="mr-2 rounded text-pink-500"> CPF</label>
+                        <label class="flex items-center"><input type="checkbox" value="rg" class="mr-2 rounded text-pink-500"> RG</label>
+                        <label class="flex items-center"><input type="checkbox" value="estadoCivil" class="mr-2 rounded text-pink-500"> Estado Civil</label>
+                        <label class="flex items-center"><input type="checkbox" value="profissao" class="mr-2 rounded text-pink-500"> Profissão</label>
+                        <label class="flex items-center"><input type="checkbox" value="empregado" class="mr-2 rounded text-pink-500"> Empregado</label>
+                        <label class="flex items-center"><input type="checkbox" value="epiletico" class="mr-2 rounded text-pink-500"> Epiléptico</label>
+                        <label class="flex items-center"><input type="checkbox" value="cep" class="mr-2 rounded text-pink-500"> CEP</label>
                     </div>
 
                     <button id="generate-report-btn" class="btn-zumba">Gerar Relatório</button>
@@ -447,7 +538,11 @@
                                 </tbody>
                             </table>
                         </div>
-                        <button id="export-csv-btn" class="mt-4 btn-zumba-secondary">Exportar para CSV</button>
+                        <div class="mt-4 flex gap-2 flex-wrap">
+                            <button id="export-csv-btn" class="btn-zumba-secondary">Exportar CSV</button>
+                            <button id="export-xlsx-btn" class="btn-zumba-secondary">Exportar XLSX</button>
+                            <button id="export-pdf-btn" class="btn-zumba-secondary">Exportar PDF</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -633,7 +728,8 @@
             getStorage, 
             ref, 
             uploadBytes, 
-            getDownloadURL 
+            getDownloadURL,
+            deleteObject
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         // ==================================================================
@@ -710,6 +806,13 @@
         const reportTableHead = document.getElementById('report-table-head');
         const reportTableBody = document.getElementById('report-table-body');
         const exportCsvBtn = document.getElementById('export-csv-btn');
+        const exportXlsxBtn = document.getElementById('export-xlsx-btn');
+        const exportPdfBtn = document.getElementById('export-pdf-btn');
+        const statusFilter = document.getElementById('report-status-filter');
+        const dateStartInput = document.getElementById('report-date-start');
+        const dateEndInput = document.getElementById('report-date-end');
+        const cityFilterInput = document.getElementById('report-city-filter');
+        let lastReportData = { headers: [], rows: [] };
 
         // =================================================
         // Lógica de Navegação
@@ -956,6 +1059,8 @@
         
         let allRegistrations = []; // Cache para relatórios
         let allRegistrationsUnsubscribe = null; // Listener do Firestore
+        const adminSearchInput = document.getElementById('admin-search');
+        const adminSortSelect = document.getElementById('admin-sort');
 
         function loadAdminPanelData() {
             // Limpar listeners antigos se existirem
@@ -968,61 +1073,79 @@
             // Listener para TODAS as inscrições
             allRegistrationsUnsubscribe = onSnapshot(registrationsCol, (snapshot) => {
                 allRegistrations = []; // Limpar cache
-                const pendingHtml = [];
-                const rejectedHtml = [];
-                
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     const docId = doc.id;
                     allRegistrations.push({ id: docId, ...data });
-                    
-                    const cardHtml = `
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm border">
-                            <div>
-                                <p class="font-bold text-lg">${data.nome || 'Nome não informado'}</p>
-                                <p class="text-sm text-gray-600">${data.email || data.cpf || 'Sem identificador'}</p>
-                                <p class="text-xs text-gray-500">Enviado em: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <button data-id="${docId}" class="view-btn btn-zumba-secondary text-sm">Ver/Editar</button>
-                                ${data.status === 'pending' ? `<button data-id="${docId}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Aprovar</button>` : ''}
-                                ${data.status !== 'rejected' ? `<button data-id="${docId}" class="reject-btn btn-zumba text-sm !px-3 !py-1">Rejeitar</button>` : ''}
-                                ${data.status === 'rejected' ? `<button data-id="${docId}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Re-Aprovar</button>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    
-                    if(data.status === 'pending') {
-                        pendingHtml.push(cardHtml);
-                    } else if (data.status === 'rejected') {
-                        rejectedHtml.push(cardHtml);
-                    }
-                    // Aprovados não são listados aqui, aparecem no relatório
                 });
-
-                // Atualizar lista de pendentes
-                if (pendingHtml.length > 0) {
-                    pendingList.innerHTML = pendingHtml.join('');
-                    noPendingMsg.classList.add('hidden-section');
-                } else {
-                    pendingList.innerHTML = '';
-                    noPendingMsg.classList.remove('hidden-section');
-                }
-                
-                // Atualizar lista de rejeitados
-                if (rejectedHtml.length > 0) {
-                    rejectedList.innerHTML = rejectedHtml.join('');
-                    noRejectedMsg.classList.add('hidden-section');
-                } else {
-                    rejectedList.innerHTML = '';
-                    noRejectedMsg.classList.remove('hidden-section');
-                }
-
+                renderAdminLists();
             }, (error) => {
                 console.error("Erro ao carregar inscrições:", error);
                 pendingList.innerHTML = '<p class="text-red-500">Erro ao carregar dados.</p>';
             });
         }
+
+        function renderAdminLists() {
+            const q = (adminSearchInput?.value || '').toLowerCase().trim();
+            const sort = adminSortSelect?.value || 'date_desc';
+
+            const pending = [];
+            const rejected = [];
+
+            const matchesQuery = (d) => {
+                if (!q) return true;
+                const pool = [d.nome, d.email, d.cpf, d.cidade].map(v => (v || '').toLowerCase());
+                return pool.some(v => v.includes(q));
+            };
+
+            const sorted = allRegistrations.slice().sort((a,b) => {
+                if (sort === 'name_asc') return (a.nome||'').localeCompare(b.nome||'');
+                if (sort === 'name_desc') return (b.nome||'').localeCompare(a.nome||'');
+                const ad = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const bd = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return sort === 'date_asc' ? ad - bd : bd - ad;
+            });
+
+            sorted.forEach(({id, ...data}) => {
+                if (!matchesQuery(data)) return;
+                const cardHtml = `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm border">
+                        <div>
+                            <p class="font-bold text-lg">${data.nome || 'Nome não informado'}</p>
+                            <p class="text-sm text-gray-600">${data.email || data.cpf || 'Sem identificador'}</p>
+                            <p class="text-xs text-gray-500">Enviado em: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button data-id="${id}" class="view-btn btn-zumba-secondary text-sm !px-3 !py-1">Ver/Editar</button>
+                            ${data.status === 'pending' ? `<button data-id="${id}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Aprovar</button>` : ''}
+                            ${data.status !== 'rejected' ? `<button data-id="${id}" class="reject-btn btn-zumba text-sm !px-3 !py-1">Rejeitar</button>` : ''}
+                            ${data.status === 'rejected' ? `<button data-id="${id}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Re-Aprovar</button>` : ''}
+                        </div>
+                    </div>
+                `;
+                if (data.status === 'pending') pending.push(cardHtml);
+                else if (data.status === 'rejected') rejected.push(cardHtml);
+            });
+
+            if (pending.length) {
+                pendingList.innerHTML = pending.join('');
+                noPendingMsg.classList.add('hidden-section');
+            } else {
+                pendingList.innerHTML = '';
+                noPendingMsg.classList.remove('hidden-section');
+            }
+
+            if (rejected.length) {
+                rejectedList.innerHTML = rejected.join('');
+                noRejectedMsg.classList.add('hidden-section');
+            } else {
+                rejectedList.innerHTML = '';
+                noRejectedMsg.classList.remove('hidden-section');
+            }
+        }
+
+        adminSearchInput?.addEventListener('input', renderAdminLists);
+        adminSortSelect?.addEventListener('change', renderAdminLists);
         
         // Ações dos botões (Aprovar, Rejeitar, Ver)
         document.addEventListener('click', async (e) => {
@@ -1050,7 +1173,12 @@
                  if (confirm('Tem certeza que deseja REJEITAR esta inscrição?')) {
                     try {
                         const docRef = doc(db, "registrations", docId);
+                        const snap = await getDoc(docRef);
+                        const data = snap.data() || {};
                         await updateDoc(docRef, { status: "rejected" });
+                        // Remover arquivos associados
+                        if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
+                        if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
                         console.log("Inscrição rejeitada:", docId);
                     } catch (error) {
                         console.error("Erro ao rejeitar:", error);
@@ -1201,10 +1329,11 @@
             modalMessage.textContent = 'Deletando...';
             
             try {
-                // TODO: Deletar arquivos do Storage antes de deletar o doc
-                // (Por simplicidade, vamos pular isso, mas é importante para produção)
-                
                 const docRef = doc(db, "registrations", currentEditingDocId);
+                const snap = await getDoc(docRef);
+                const data = snap.data() || {};
+                if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
+                if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
                 await deleteDoc(docRef);
                 
                 modalMessage.textContent = 'Deletado com sucesso!';
@@ -1235,13 +1364,34 @@
                 return;
             }
 
-            // Filtrar apenas os aprovados
-            const approvedUsers = allRegistrations.filter(user => user.status === 'approved');
+            // Filtros
+            const status = statusFilter.value;
+            const startDateStr = dateStartInput.value;
+            const endDateStr = dateEndInput.value;
+            const cityFilter = (cityFilterInput.value || '').trim().toLowerCase();
 
-            if (approvedUsers.length === 0) {
+            let filteredUsers = allRegistrations.slice();
+            if (status !== 'all') {
+                filteredUsers = filteredUsers.filter(u => (u.status || 'pending') === status);
+            }
+            if (startDateStr) {
+                const start = new Date(startDateStr);
+                filteredUsers = filteredUsers.filter(u => u.createdAt ? new Date(u.createdAt) >= start : false);
+            }
+            if (endDateStr) {
+                const end = new Date(endDateStr);
+                // incluir dia inteiro
+                end.setHours(23,59,59,999);
+                filteredUsers = filteredUsers.filter(u => u.createdAt ? new Date(u.createdAt) <= end : false);
+            }
+            if (cityFilter) {
+                filteredUsers = filteredUsers.filter(u => (u.cidade || '').toLowerCase().includes(cityFilter));
+            }
+
+            if (filteredUsers.length === 0) {
                 reportResultsContainer.classList.remove('hidden-section');
                 reportTableHead.innerHTML = '';
-                reportTableBody.innerHTML = '<tr><td class="p-4" colspan="100%">Nenhum usuário aprovado encontrado.</td></tr>';
+                reportTableBody.innerHTML = '<tr><td class="p-4" colspan="100%">Nenhum registro encontrado para os filtros selecionados.</td></tr>';
                 return;
             }
 
@@ -1256,17 +1406,32 @@
 
             // Gerar Corpo da Tabela
             let bodyHtml = '';
-            approvedUsers.forEach(user => {
+            const rows = [];
+            filteredUsers.forEach(user => {
                 bodyHtml += '<tr>';
                 selectedFields.forEach(field => {
                     const value = user[field] || 'N/A';
                     bodyHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${value}</td>`;
+                    rows.push(value);
                 });
                 bodyHtml += '</tr>';
             });
             reportTableBody.innerHTML = bodyHtml;
 
             reportResultsContainer.classList.remove('hidden-section');
+
+            // Guardar dados para exportação
+            const headers = [];
+            reportTableHead.querySelectorAll('th').forEach(th => headers.push(th.textContent));
+            // reconstrói linhas de forma correta
+            const tableRows = [];
+            reportTableBody.querySelectorAll('tr').forEach(tr => {
+                const tds = tr.querySelectorAll('td');
+                const row = [];
+                tds.forEach(td => row.push(td.textContent));
+                tableRows.push(row);
+            });
+            lastReportData = { headers, rows: tableRows };
         });
         
         // Exportar para CSV
@@ -1294,6 +1459,37 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        });
+
+        // Exportar para XLSX
+        exportXlsxBtn.addEventListener('click', () => {
+            if (!lastReportData.headers.length) { alert('Gere o relatório antes de exportar.'); return; }
+            const aoa = [ lastReportData.headers, ...lastReportData.rows ];
+            const ws = XLSX.utils.aoa_to_sheet(aoa);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Relatorio');
+            XLSX.writeFile(wb, 'relatorio_zumba.xlsx');
+        });
+
+        // Exportar para PDF
+        exportPdfBtn.addEventListener('click', () => {
+            if (!lastReportData.headers.length) { alert('Gere o relatório antes de exportar.'); return; }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+            const title = 'Relatório Projeto Zumba';
+            const date = new Date().toLocaleString('pt-BR');
+            doc.setFontSize(16);
+            doc.text(title, 14, 15);
+            doc.setFontSize(10);
+            doc.text(`Gerado em ${date}`, 14, 22);
+            doc.autoTable({
+                head: [ lastReportData.headers ],
+                body: lastReportData.rows,
+                startY: 28,
+                styles: { fontSize: 9 },
+                headStyles: { fillColor: [236, 72, 153] },
+            });
+            doc.save('relatorio_zumba.pdf');
         });
         
         
