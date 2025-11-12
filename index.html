@@ -746,7 +746,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyDBrzQrHMkoBuAPa1l7r7AgSzscCkPfsw8",
             authDomain: "projeto-zumba-cadastro.firebaseapp.com",
-            projectId: "projeto-zumba-cadastro",
+            projectId: "projeto-zumba-cadastro", // Verifique se este é o ID correto do seu projeto!
             storageBucket: "projeto-zumba-cadastro.firebasestorage.app",
             messagingSenderId: "206177270048",
             appId: "1:206177270048:web:bcbf5d1957c0ee9b78ff45"
@@ -755,6 +755,9 @@
         // COLE O UID DO SEU USUÁRIO ADMIN AQUI
         // (Encontre em Firebase Console > Authentication > Users > User UID)
         const ADMIN_UID = "5a3Wp2mG3rPPSgfr2rOtpCZURrl2"; 
+        
+        // NOVO NOME DA COLEÇÃO DE INSCRIÇÕES
+        const INSCRICOES_COLLECTION = "inscricoes_zumba";
         
         // ==================================================================
         // FIM DA CONFIGURAÇÃO
@@ -1019,8 +1022,8 @@
                 formData.createdAt = new Date().toISOString();
 
                 // 4. Salvar no Firestore
-                console.log("Tentando salvar no Firestore...");
-                const docRef = await addDoc(collection(db, "registrations"), formData);
+                console.log("Tentando salvar no Firestore na coleção:", INSCRICOES_COLLECTION);
+                const docRef = await addDoc(collection(db, INSCRICOES_COLLECTION), formData);
                 
                 console.log("Inscrição enviada com ID:", docRef.id);
                 setRegisterLoading(false);
@@ -1038,7 +1041,7 @@
 
                 // Diagnóstico para o problema de permissão no Firestore
                 if (error.code && error.code.includes('permission-denied')) {
-                     registerMessage.textContent = 'Erro de Permissão (Firestore). Verifique as Regras de Segurança do Firebase para a coleção "registrations" (allow create: if true;).';
+                     registerMessage.textContent = `Erro de Permissão (Firestore). Verifique as Regras de Segurança do Firebase para a coleção "${INSCRICOES_COLLECTION}" (allow create: if true;).`;
                 } else {
                     registerMessage.textContent = `Erro ao enviar inscrição: ${error.message}`;
                 }
@@ -1129,7 +1132,7 @@
                 allRegistrationsUnsubscribe();
             }
 
-            const registrationsCol = collection(db, "registrations");
+            const registrationsCol = collection(db, INSCRICOES_COLLECTION);
             
             // Listener para TODAS as inscrições
             allRegistrationsUnsubscribe = onSnapshot(registrationsCol, (snapshot) => {
@@ -1142,7 +1145,7 @@
                 renderAdminLists();
             }, (error) => {
                 console.error("Erro ao carregar inscrições: Permissão de Leitura (READ) negada.", error);
-                pendingList.innerHTML = '<p class="text-red-500 font-bold">Erro ao carregar dados. Verifique as Regras de Segurança do Firebase para a permissão de leitura (READ) do administrador.</p>';
+                pendingList.innerHTML = `<p class="text-red-500 font-bold">Erro ao carregar dados. Verifique as Regras de Segurança do Firebase para a permissão de leitura (READ) do administrador na coleção "${INSCRICOES_COLLECTION}".</p>`;
             });
         }
 
@@ -1230,7 +1233,7 @@
                 // Substituir confirm()
                 if (window.confirm('Tem certeza que deseja APROVAR esta inscrição?')) {
                     try {
-                        const docRef = doc(db, "registrations", docId);
+                        const docRef = doc(db, INSCRICOES_COLLECTION, docId);
                         await updateDoc(docRef, { status: "approved" });
                         console.log("Inscrição aprovada:", docId);
                         showMessage("Inscrição APROVADA.");
@@ -1246,7 +1249,7 @@
                  // Substituir confirm()
                  if (window.confirm('Tem certeza que deseja REJEITAR esta inscrição? Isso irá remover os arquivos associados (se existirem)!')) {
                     try {
-                        const docRef = doc(db, "registrations", docId);
+                        const docRef = doc(db, INSCRICOES_COLLECTION, docId);
                         const snap = await getDoc(docRef);
                         const data = snap.data() || {};
                         await updateDoc(docRef, { status: "rejected" });
@@ -1284,7 +1287,7 @@
             modalMessage.textContent = '';
             
             try {
-                const docRef = doc(db, "registrations", docId);
+                const docRef = doc(db, INSCRICOES_COLLECTION, docId);
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
@@ -1387,7 +1390,7 @@
                 // Remover campos que não devem ser atualizados
                 delete formData['doc-id']; 
                 
-                const docRef = doc(db, "registrations", currentEditingDocId);
+                const docRef = doc(db, INSCRICOES_COLLECTION, currentEditingDocId);
                 await updateDoc(docRef, formData);
                 
                 modalMessage.textContent = 'Salvo com sucesso!';
@@ -1416,7 +1419,7 @@
             modalMessage.textContent = 'Deletando...';
             
             try {
-                const docRef = doc(db, "registrations", currentEditingDocId);
+                const docRef = doc(db, INSCRICOES_COLLECTION, currentEditingDocId);
                 const snap = await getDoc(docRef);
                 const data = snap.data() || {};
                 
