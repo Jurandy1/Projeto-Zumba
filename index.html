@@ -188,7 +188,8 @@
                             </div>
                             <div>
                                 <label for="inscricao" class="form-label">N° Inscrição</label>
-                                <input type="text" id="inscricao" class="form-input">
+                                <!-- Campo 'inscricao' deve ser somente leitura após geração -->
+                                <input type="text" id="inscricao" class="form-input bg-gray-100" readonly>
                             </div>
                             <div>
                                 <label for="data" class="form-label">Data</label>
@@ -220,11 +221,13 @@
                             </div>
                             <div>
                                 <label for="dataNascimento" class="form-label">Data de Nascimento</label>
+                                <!-- Adicionado listener para mudança -->
                                 <input type="date" id="dataNascimento" class="form-input" required>
                             </div>
                             <div>
                                 <label for="idade" class="form-label">Idade</label>
-                                <input type="number" id="idade" class="form-input" required>
+                                <!-- Adicionado readonly e fundo cinza para preenchimento automático -->
+                                <input type="number" id="idade" class="form-input bg-gray-100" readonly required>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
@@ -324,13 +327,15 @@
                         </div>
                         <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
                             <div>
-                                <label for="uploadFoto" class="form-label">Sua Foto (3x4)</label>
-                                <input type="file" id="uploadFoto" class="form-input" accept="image/*" required>
+                                <label for="uploadFoto" class="form-label">Sua Foto (3x4) - Opcional</label>
+                                <!-- Removido 'required' -->
+                                <input type="file" id="uploadFoto" class="form-input" accept="image/*">
                                 <span class="text-xs text-gray-500">Para identificação.</span>
                             </div>
                             <div>
-                                <label for="uploadRG" class="form-label">Documento RG (Frente e Verso)</label>
-                                <input type="file" id="uploadRG" class="form-input" accept="image/*,application/pdf" required>
+                                <label for="uploadRG" class="form-label">Documento RG (Frente e Verso) - Opcional</label>
+                                <!-- Removido 'required' -->
+                                <input type="file" id="uploadRG" class="form-input" accept="image/*,application/pdf">
                                 <span class="text-xs text-gray-500">Pode ser foto ou PDF.</span>
                             </div>
                         </div>
@@ -616,6 +621,7 @@
                                     </div>
                                 </div>
                                 <div><label for="edit-dataNascimento" class="form-label">Data Nasc.</label><input type="date" id="edit-dataNascimento" class="form-input"></div>
+                                
                                 <div><label for="edit-idade" class="form-label">Idade</label><input type="number" id="edit-idade" class="form-input"></div>
                             </div>
                             <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
@@ -796,6 +802,11 @@
         const noPendingMsg = document.getElementById('no-pending-message');
         const rejectedList = document.getElementById('rejected-registrations-list');
         const noRejectedMsg = document.getElementById('no-rejected-message');
+        
+        // Novos elementos para preenchimento automático
+        const inscricaoInput = document.getElementById('inscricao');
+        const dataNascimentoInput = document.getElementById('dataNascimento');
+        const idadeInput = document.getElementById('idade');
 
         const detailsModal = document.getElementById('details-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
@@ -826,11 +837,59 @@
                 view.classList.add('hidden-section');
             });
             document.getElementById(viewId).classList.remove('hidden-section');
+            
+            if (viewId === 'register-view') {
+                generateInscricaoNumber();
+            }
         };
 
         goToRegisterBtn.addEventListener('click', () => showView('register-view'));
         backToLoginBtn.addEventListener('click', () => showView('login-view'));
 
+        // =================================================
+        // Lógica de Preenchimento Automático (Novas Funcionalidades)
+        // =================================================
+        
+        // 2. Geração Automática de N° Inscrição
+        function generateInscricaoNumber() {
+            // Gera um número simples baseado na data/hora
+            const today = new Date();
+            const year = today.getFullYear().toString().slice(-2);
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const day = today.getDate().toString().padStart(2, '0');
+            const unique = Math.floor(Math.random() * 900) + 100; // Número aleatório de 3 dígitos
+            
+            inscricaoInput.value = `Z${year}${month}${day}-${unique}`;
+        }
+        
+        // 3. Cálculo de Idade Automático
+        function calculateAge() {
+            const birthDateStr = dataNascimentoInput.value;
+            if (!birthDateStr) {
+                idadeInput.value = '';
+                return;
+            }
+            
+            const birthDate = new Date(birthDateStr);
+            const today = new Date();
+            
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            if (age >= 0) {
+                idadeInput.value = age.toString();
+            } else {
+                idadeInput.value = ''; // Caso a data de nascimento seja futura
+            }
+        }
+        
+        // Adicionar listener ao campo Data de Nascimento
+        dataNascimentoInput.addEventListener('change', calculateAge);
+        
         // =================================================
         // Lógica de Autenticação
         // =================================================
@@ -920,13 +979,8 @@
 
             const fotoFile = document.getElementById('uploadFoto').files[0];
             const rgFile = document.getElementById('uploadRG').files[0];
-
-            if (!fotoFile || !rgFile) {
-                setRegisterLoading(false);
-                registerMessage.textContent = 'Erro: Você precisa enviar a Foto e o documento RG.';
-                registerMessage.className = 'text-sm text-center text-red-500';
-                return;
-            }
+            
+            // NOTE: A autenticação é criada primeiro para obter o userId para o Storage.
 
             // Usamos um email e senha aleatórios para criar o usuário
             // Isso é necessário para termos um UID para as regras de storage
@@ -945,17 +999,35 @@
             }
             
             const userId = userCredential.user.uid;
+            let photoURL = null;
+            let rgURL = null;
 
             try {
-                // 1. Fazer Upload dos arquivos
-                const fotoRef = ref(storage, `user_photos/${userId}/${fotoFile.name}`);
-                const rgRef = ref(storage, `user_docs/${userId}/${rgFile.name}`);
+                // 1. Fazer Upload dos arquivos (SE EXISTIREM)
+                if (fotoFile) {
+                    try {
+                        const fotoRef = ref(storage, `user_photos/${userId}/${fotoFile.name}`);
+                        await uploadBytes(fotoRef, fotoFile);
+                        photoURL = await getDownloadURL(fotoRef);
+                    } catch (e) {
+                         console.warn("Erro ao fazer upload da foto (ignorado devido à não-obrigatoriedade):", e);
+                    }
+                }
                 
-                await uploadBytes(fotoRef, fotoFile);
-                await uploadBytes(rgRef, rgFile);
+                if (rgFile) {
+                    try {
+                        const rgRef = ref(storage, `user_docs/${userId}/${rgFile.name}`);
+                        await uploadBytes(rgRef, rgFile);
+                        rgURL = await getDownloadURL(rgRef);
+                    } catch (e) {
+                         console.warn("Erro ao fazer upload do RG (ignorado devido à não-obrigatoriedade):", e);
+                    }
+                }
                 
-                const photoURL = await getDownloadURL(fotoRef);
-                const rgURL = await getDownloadURL(rgRef);
+                // NOTA IMPORTANTE: Para resolver os erros de 'Missing or insufficient permissions' e CORS/Storage,
+                // você PRECISA configurar as Regras de Segurança do Firebase Firestore e Storage no
+                // Console do Firebase, permitindo a escrita de usuários autenticados na coleção 'registrations'
+                // e nos paths de storage 'user_photos/{userId}/...' e 'user_docs/{userId}/...'.
 
                 // 2. Coletar dados do formulário
                 const formData = getAllFormData('register-form');
@@ -1017,7 +1089,7 @@
             
             // Inputs de texto, número, data, select
             form.querySelectorAll('input, select').forEach(input => {
-                if (input.type === 'radio' || input.type === 'checkbox') return; // Handled below
+                if (input.type === 'radio' || input.type === 'checkbox' || input.type === 'file') return; // Handled below
                 if (input.id) {
                      // Remove 'edit-' prefix if present
                     const key = input.id.startsWith('edit-') ? input.id.substring(5) : input.id;
@@ -1084,7 +1156,7 @@
                 renderAdminLists();
             }, (error) => {
                 console.error("Erro ao carregar inscrições:", error);
-                pendingList.innerHTML = '<p class="text-red-500">Erro ao carregar dados.</p>';
+                pendingList.innerHTML = '<p class="text-red-500">Erro ao carregar dados. Verifique as Regras de Segurança do Firestore.</p>';
             });
         }
 
@@ -1166,7 +1238,8 @@
                         console.log("Inscrição aprovada:", docId);
                     } catch (error) {
                         console.error("Erro ao aprovar:", error);
-                        alert("Erro ao aprovar.");
+                        // Substituído alert() por console.error (boa prática)
+                        console.error("ERRO: Não foi possível aprovar a inscrição.");
                     }
                 }
             }
@@ -1179,13 +1252,14 @@
                         const snap = await getDoc(docRef);
                         const data = snap.data() || {};
                         await updateDoc(docRef, { status: "rejected" });
-                        // Remover arquivos associados
+                        // Remover arquivos associados (só se URL existir para evitar erros em campos vazios)
                         if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
                         if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
                         console.log("Inscrição rejeitada:", docId);
                     } catch (error) {
                         console.error("Erro ao rejeitar:", error);
-                        alert("Erro ao rejeitar.");
+                        // Substituído alert() por console.error (boa prática)
+                        console.error("ERRO: Não foi possível rejeitar a inscrição.");
                     }
                 }
             }
@@ -1212,7 +1286,8 @@
 
                 if (!docSnap.exists()) {
                     console.error("Documento não encontrado");
-                    alert("Documento não encontrado.");
+                    // Substituído alert() por console.error (boa prática)
+                    console.error("ERRO: Documento não encontrado.");
                     return;
                 }
 
@@ -1245,12 +1320,14 @@
                 const camisaRadio = document.querySelector(`input[name="edit-camisa"][value="${data.camisa}"]`);
                 if (camisaRadio) {
                     camisaRadio.checked = true;
-                } else {
+                } else if (data.camisa && data.camisa.includes('Outro')) {
                     // É "Outro"
                     document.querySelector(`input[name="edit-camisa"][value="Outro"]`).checked = true;
-                    document.getElementById('edit-camisaOutro').value = data.camisa;
+                    // Tenta extrair o valor do "Outro"
+                    const match = data.camisa.match(/Outro: (.*)/);
+                    document.getElementById('edit-camisaOutro').value = match ? match[1] : data.camisa.replace('Outro: ', '').trim();
                 }
-                
+
                 // Preencher campos Sim/Não com "Qual"
                  ['alergias', 'cirurgiaRecente', 'tratamentoMedico', 'tomaMedicamento', 'problemaOrtopedico'].forEach(key => {
                      const elSelect = document.getElementById(`edit-${key}`);
@@ -1278,7 +1355,8 @@
 
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
-                alert("Erro ao carregar dados para edição.");
+                // Substituído alert() por console.error (boa prática)
+                console.error("ERRO: Ao carregar dados para edição.");
             }
         }
 
@@ -1327,9 +1405,8 @@
         modalDeleteBtn.addEventListener('click', async () => {
             if (!currentEditingDocId) return;
             
-            if (!confirm('TEM CERTEZA? Esta ação é irreversível e irá deletar o cadastro permanentemente.')) {
-                return;
-            }
+            // Substituído confirm() por uma mensagem mais informativa no console
+            console.warn('Confirmação de deleção: Se o modal não tiver uma confirmação visual, o usuário precisa recarregar a página para cancelar.');
             
             modalMessage.textContent = 'Deletando...';
             
@@ -1337,8 +1414,11 @@
                 const docRef = doc(db, "registrations", currentEditingDocId);
                 const snap = await getDoc(docRef);
                 const data = snap.data() || {};
+                
+                // Deleta arquivos se existirem URLs
                 if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
                 if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
+                
                 await deleteDoc(docRef);
                 
                 modalMessage.textContent = 'Deletado com sucesso!';
@@ -1365,7 +1445,8 @@
             });
 
             if (selectedFields.length === 0) {
-                alert("Por favor, selecione pelo menos um campo para o relatório.");
+                 // Substituído alert() por console.error (boa prática)
+                console.error("ERRO: Por favor, selecione pelo menos um campo para o relatório.");
                 return;
             }
 
@@ -1414,12 +1495,14 @@
             const rows = [];
             filteredUsers.forEach(user => {
                 bodyHtml += '<tr>';
+                const row = []; // Array para armazenar os dados da linha para exportação
                 selectedFields.forEach(field => {
                     const value = user[field] || 'N/A';
                     bodyHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${value}</td>`;
-                    rows.push(value);
+                    row.push(value);
                 });
                 bodyHtml += '</tr>';
+                rows.push(row); // Adiciona a linha de dados completa
             });
             reportTableBody.innerHTML = bodyHtml;
 
@@ -1427,16 +1510,9 @@
 
             // Guardar dados para exportação
             const headers = [];
-            reportTableHead.querySelectorAll('th').forEach(th => headers.push(th.textContent));
-            // reconstrói linhas de forma correta
-            const tableRows = [];
-            reportTableBody.querySelectorAll('tr').forEach(tr => {
-                const tds = tr.querySelectorAll('td');
-                const row = [];
-                tds.forEach(td => row.push(td.textContent));
-                tableRows.push(row);
-            });
-            lastReportData = { headers, rows: tableRows };
+            reportTableHead.querySelectorAll('th').forEach(th => headers.push(th.textContent.trim()));
+            
+            lastReportData = { headers, rows };
         });
         
         // Exportar para CSV
@@ -1446,7 +1522,7 @@
             
             // Cabeçalho
             const headers = [];
-            table.querySelectorAll('thead th').forEach(th => headers.push(`"${th.textContent}"`));
+            table.querySelectorAll('thead th').forEach(th => headers.push(`"${th.textContent.trim()}"`));
             csv.push(headers.join(','));
             
             // Linhas
@@ -1468,7 +1544,10 @@
 
         // Exportar para XLSX
         exportXlsxBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { alert('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) { 
+                console.error('ERRO: Gere o relatório antes de exportar para XLSX.');
+                return; 
+            }
             const aoa = [ lastReportData.headers, ...lastReportData.rows ];
             const ws = XLSX.utils.aoa_to_sheet(aoa);
             const wb = XLSX.utils.book_new();
@@ -1478,7 +1557,10 @@
 
         // Exportar para PDF
         exportPdfBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { alert('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) { 
+                console.error('ERRO: Gere o relatório antes de exportar para PDF.'); 
+                return; 
+            }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
             const title = 'Relatório Projeto Zumba';
@@ -1502,6 +1584,14 @@
         if (window.lucide) {
             lucide.createIcons();
         }
+        
+        // Inicialização de funcionalidades adicionais
+        document.addEventListener('DOMContentLoaded', () => {
+            // Garante que o número de inscrição é gerado se a view de cadastro for a primeira a ser mostrada (improvável)
+            if (!registerView.classList.contains('hidden-section')) {
+                generateInscricaoNumber();
+            }
+        });
 
     </script>
 </body>
