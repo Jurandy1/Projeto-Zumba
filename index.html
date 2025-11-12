@@ -975,7 +975,7 @@
             } catch (error) {
                  console.error("Erro ao criar usuário temporário:", error);
                 setRegisterLoading(false);
-                registerMessage.textContent = 'Erro ao iniciar inscrição. Tente novamente.';
+                registerMessage.textContent = 'Erro ao iniciar inscrição (Auth). Tente novamente.';
                 registerMessage.className = 'text-sm text-center text-red-500';
                 return;
             }
@@ -985,8 +985,11 @@
             let rgURL = null;
             
             try {
-                // 2. Fazer Upload dos arquivos (SE EXISTIREM)
+                // 2. Fazer Upload dos arquivos (IGNORADO/COMENTADO TEMPORARIAMENTE)
+                // O Storage não está configurado. O código abaixo é ignorado para
+                // evitar que ele trave/falhe no upload.
                 
+                /*
                 if (fotoFile) {
                      console.log("Tentando fazer upload da foto...");
                     const fotoRef = ref(storage, `user_photos/${userId}/${fotoFile.name}`);
@@ -1004,15 +1007,16 @@
                 } else {
                     console.log("Nenhum RG fornecido. Pulando upload.");
                 }
+                */
                 
                 // 3. Coletar dados do formulário
                 const formData = getAllFormData('register-form');
-                formData.photoURL = photoURL;
-                formData.rgURL = rgURL;
-                formData.userId = userId; // Guardar o UID do usuário
-                formData.status = 'pending'; // Status inicial
-                formData.email = tempEmail; // Guardar o email temporário
-                formData.createdAt = new Date().toISOString(); // Data de criação
+                formData.photoURL = photoURL; // null
+                formData.rgURL = rgURL;     // null
+                formData.userId = userId;
+                formData.status = 'pending';
+                formData.email = tempEmail;
+                formData.createdAt = new Date().toISOString();
 
                 // 4. Salvar no Firestore
                 console.log("Tentando salvar no Firestore...");
@@ -1247,8 +1251,13 @@
                         const data = snap.data() || {};
                         await updateDoc(docRef, { status: "rejected" });
                         // Remover arquivos associados (Se existirem)
-                        if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
-                        if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
+                        // Lógica de Storage removida temporariamente (ver linha 975)
+                        if (data.photoURL) { console.warn('Tentativa de deletar foto. Storage desabilitado.'); } 
+                        if (data.rgURL) { console.warn('Tentativa de deletar RG. Storage desabilitado.'); }
+                        
+                        // if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
+                        // if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
+                        
                         console.log("Inscrição rejeitada:", docId);
                         showMessage("Inscrição REJEITADA.", true);
                     } catch (error) {
@@ -1410,9 +1419,15 @@
                 const docRef = doc(db, "registrations", currentEditingDocId);
                 const snap = await getDoc(docRef);
                 const data = snap.data() || {};
+                
                 // Tenta deletar arquivos antes de deletar o documento
-                if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
-                if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
+                // Lógica de Storage removida temporariamente (ver linha 975)
+                if (data.photoURL) { console.warn('Tentativa de deletar foto. Storage desabilitado.'); } 
+                if (data.rgURL) { console.warn('Tentativa de deletar RG. Storage desabilitado.'); }
+                
+                // if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
+                // if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
+                
                 await deleteDoc(docRef);
                 
                 modalMessage.textContent = 'Deletado com sucesso!';
