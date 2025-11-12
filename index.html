@@ -12,10 +12,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-    <!-- Ícones (Lucide) - CORRIGIDO -->
-    <!-- O script 'lucide-react' foi removido pois é para projetos React. -->
-    <!-- O script 'lucide-icons' foi substituído pelo UMD (para browser) correto. -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <!-- Ícones (Lucide) - Usando link direto para o script que cria os ícones -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Export libs -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -112,12 +110,12 @@
             position: fixed;
             inset: 0;
             z-index: 50;
-            display: none; /* Padrão oculto */
+            display: none; /* Alterado para começar como none */
             align-items: center;
             justify-content: center;
             background: rgba(0,0,0,0.75);
+            opacity: 0; /* Alterado para começar com opacidade 0 */
             transition: opacity 300ms ease-in-out;
-            opacity: 0; /* Padrão transparente */
         }
     </style>
 </head>
@@ -159,7 +157,7 @@
                     </div>
 
                     <!-- Botão para ir ao Cadastro -->
-                    <button id="go-to-register-btn" class="w-full btn-zumba-alt">
+                    <button type="button" id="go-to-register-btn" class="w-full btn-zumba-alt">
                         Fazer Inscrição
                     </button>
                     
@@ -188,7 +186,7 @@
                             </div>
                             <div>
                                 <label for="inscricao" class="form-label">N° Inscrição</label>
-                                <!-- Campo 'inscricao' deve ser somente leitura após geração -->
+                                <!-- Tornar o campo readonly e adicionar bg-gray-100 para indicar auto-preenchimento -->
                                 <input type="text" id="inscricao" class="form-input bg-gray-100" readonly>
                             </div>
                             <div>
@@ -210,23 +208,22 @@
                                 <label class="form-label">Sexo</label>
                                 <div class="flex items-center mt-2 space-x-4">
                                     <label class="flex items-center">
-                                        <input type="radio" name="sexo" value="Masculino" class="text-pink-600 focus:ring-pink-500">
+                                        <input type="radio" name="sexo" value="Masculino" class="text-pink-600 focus:ring-pink-500" required>
                                         <span class="ml-2">Masculino</span>
                                     </label>
                                     <label class="flex items-center">
-                                        <input type="radio" name="sexo" value="Feminino" class="text-pink-600 focus:ring-pink-500">
+                                        <input type="radio" name="sexo" value="Feminino" class="text-pink-600 focus:ring-pink-500" required>
                                         <span class="ml-2">Feminino</span>
                                     </label>
                                 </div>
                             </div>
                             <div>
                                 <label for="dataNascimento" class="form-label">Data de Nascimento</label>
-                                <!-- Adicionado listener para mudança -->
                                 <input type="date" id="dataNascimento" class="form-input" required>
                             </div>
                             <div>
                                 <label for="idade" class="form-label">Idade</label>
-                                <!-- Adicionado readonly e fundo cinza para preenchimento automático -->
+                                <!-- Tornar o campo readonly e adicionar bg-gray-100 para indicar auto-preenchimento -->
                                 <input type="number" id="idade" class="form-input bg-gray-100" readonly required>
                             </div>
                         </div>
@@ -327,14 +324,14 @@
                         </div>
                         <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
                             <div>
-                                <label for="uploadFoto" class="form-label">Sua Foto (3x4) - Opcional</label>
-                                <!-- Removido 'required' -->
+                                <label for="uploadFoto" class="form-label">Sua Foto (3x4) - *Opcional por enquanto*</label>
+                                <!-- Removido 'required' para permitir cadastro sem arquivos -->
                                 <input type="file" id="uploadFoto" class="form-input" accept="image/*">
                                 <span class="text-xs text-gray-500">Para identificação.</span>
                             </div>
                             <div>
-                                <label for="uploadRG" class="form-label">Documento RG (Frente e Verso) - Opcional</label>
-                                <!-- Removido 'required' -->
+                                <label for="uploadRG" class="form-label">Documento RG (Frente e Verso) - *Opcional por enquanto*</label>
+                                <!-- Removido 'required' para permitir cadastro sem arquivos -->
                                 <input type="file" id="uploadRG" class="form-input" accept="image/*,application/pdf">
                                 <span class="text-xs text-gray-500">Pode ser foto ou PDF.</span>
                             </div>
@@ -347,6 +344,7 @@
                         <div class="grid grid-cols-1 gap-y-4 gap-x-6 md:grid-cols-3">
                             <!-- Helper para criar Sim/Não -->
                             <script>
+                                // Este script é apenas para o template, não é executável aqui
                                 const healthQuestions = [
                                     { id: 'bebidaAlcoolica', label: 'Faz uso de bebida alcoólica?' },
                                     { id: 'fumante', label: 'É fumante?' },
@@ -621,7 +619,6 @@
                                     </div>
                                 </div>
                                 <div><label for="edit-dataNascimento" class="form-label">Data Nasc.</label><input type="date" id="edit-dataNascimento" class="form-input"></div>
-                                
                                 <div><label for="edit-idade" class="form-label">Idade</label><input type="number" id="edit-idade" class="form-input"></div>
                             </div>
                             <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
@@ -797,16 +794,14 @@
         const registerForm = document.getElementById('register-form');
         const registerMessage = document.getElementById('register-message');
         const submitRegisterBtn = document.getElementById('submit-register-btn');
+        const dataNascimentoInput = document.getElementById('dataNascimento');
+        const idadeInput = document.getElementById('idade');
+        const inscricaoInput = document.getElementById('inscricao');
         
         const pendingList = document.getElementById('pending-registrations-list');
         const noPendingMsg = document.getElementById('no-pending-message');
         const rejectedList = document.getElementById('rejected-registrations-list');
         const noRejectedMsg = document.getElementById('no-rejected-message');
-        
-        // Novos elementos para preenchimento automático
-        const inscricaoInput = document.getElementById('inscricao');
-        const dataNascimentoInput = document.getElementById('dataNascimento');
-        const idadeInput = document.getElementById('idade');
 
         const detailsModal = document.getElementById('details-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
@@ -829,7 +824,7 @@
         let lastReportData = { headers: [], rows: [] };
 
         // =================================================
-        // Lógica de Navegação
+        // Lógica de Navegação e Helpers
         // =================================================
 
         const showView = (viewId) => {
@@ -838,58 +833,47 @@
             });
             document.getElementById(viewId).classList.remove('hidden-section');
             
+            // Se for para a tela de registro, gera o número de inscrição
             if (viewId === 'register-view') {
-                generateInscricaoNumber();
+                 generateInscricaoNumber();
             }
         };
+
+        // Geração automática do N° Inscrição (Exemplo: Z241112-XXXX)
+        function generateInscricaoNumber() {
+            const date = new Date();
+            const year = String(date.getFullYear()).slice(-2);
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const random = Math.floor(100 + Math.random() * 900); // Número de 3 dígitos
+            inscricaoInput.value = `Z${year}${month}${day}-${random}`;
+        }
+
+        // Cálculo automático da Idade
+        function calculateAge() {
+            const birthDateStr = dataNascimentoInput.value;
+            if (birthDateStr) {
+                const today = new Date();
+                const birthDate = new Date(birthDateStr);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                idadeInput.value = age;
+            } else {
+                idadeInput.value = '';
+            }
+        }
+        
+        // Listener para calcular idade
+        dataNascimentoInput.addEventListener('change', calculateAge);
+
 
         goToRegisterBtn.addEventListener('click', () => showView('register-view'));
         backToLoginBtn.addEventListener('click', () => showView('login-view'));
 
-        // =================================================
-        // Lógica de Preenchimento Automático (Novas Funcionalidades)
-        // =================================================
-        
-        // 2. Geração Automática de N° Inscrição
-        function generateInscricaoNumber() {
-            // Gera um número simples baseado na data/hora
-            const today = new Date();
-            const year = today.getFullYear().toString().slice(-2);
-            const month = (today.getMonth() + 1).toString().padStart(2, '0');
-            const day = today.getDate().toString().padStart(2, '0');
-            const unique = Math.floor(Math.random() * 900) + 100; // Número aleatório de 3 dígitos
-            
-            inscricaoInput.value = `Z${year}${month}${day}-${unique}`;
-        }
-        
-        // 3. Cálculo de Idade Automático
-        function calculateAge() {
-            const birthDateStr = dataNascimentoInput.value;
-            if (!birthDateStr) {
-                idadeInput.value = '';
-                return;
-            }
-            
-            const birthDate = new Date(birthDateStr);
-            const today = new Date();
-            
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDifference = today.getMonth() - birthDate.getMonth();
-            
-            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            
-            if (age >= 0) {
-                idadeInput.value = age.toString();
-            } else {
-                idadeInput.value = ''; // Caso a data de nascimento seja futura
-            }
-        }
-        
-        // Adicionar listener ao campo Data de Nascimento
-        dataNascimentoInput.addEventListener('change', calculateAge);
-        
         // =================================================
         // Lógica de Autenticação
         // =================================================
@@ -979,17 +963,15 @@
 
             const fotoFile = document.getElementById('uploadFoto').files[0];
             const rgFile = document.getElementById('uploadRG').files[0];
-            
-            // NOTE: A autenticação é criada primeiro para obter o userId para o Storage.
 
-            // Usamos um email e senha aleatórios para criar o usuário
-            // Isso é necessário para termos um UID para as regras de storage
+            // 1. Criar usuário temporário para obter um UID
             const tempEmail = `user_${Date.now()}@zumba.com`;
             const tempPassword = Math.random().toString(36).slice(-8);
             
             let userCredential;
             try {
                 userCredential = await createUserWithEmailAndPassword(auth, tempEmail, tempPassword);
+                console.log("Usuário temporário criado:", userCredential.user.uid);
             } catch (error) {
                  console.error("Erro ao criar usuário temporário:", error);
                 setRegisterLoading(false);
@@ -1001,35 +983,29 @@
             const userId = userCredential.user.uid;
             let photoURL = null;
             let rgURL = null;
-
+            
             try {
-                // 1. Fazer Upload dos arquivos (SE EXISTIREM)
+                // 2. Fazer Upload dos arquivos (SE EXISTIREM)
+                
                 if (fotoFile) {
-                    try {
-                        const fotoRef = ref(storage, `user_photos/${userId}/${fotoFile.name}`);
-                        await uploadBytes(fotoRef, fotoFile);
-                        photoURL = await getDownloadURL(fotoRef);
-                    } catch (e) {
-                         console.warn("Erro ao fazer upload da foto (ignorado devido à não-obrigatoriedade):", e);
-                    }
+                     console.log("Tentando fazer upload da foto...");
+                    const fotoRef = ref(storage, `user_photos/${userId}/${fotoFile.name}`);
+                    await uploadBytes(fotoRef, fotoFile);
+                    photoURL = await getDownloadURL(fotoRef);
+                } else {
+                     console.log("Nenhuma foto fornecida. Pulando upload.");
                 }
-                
-                if (rgFile) {
-                    try {
-                        const rgRef = ref(storage, `user_docs/${userId}/${rgFile.name}`);
-                        await uploadBytes(rgRef, rgFile);
-                        rgURL = await getDownloadURL(rgRef);
-                    } catch (e) {
-                         console.warn("Erro ao fazer upload do RG (ignorado devido à não-obrigatoriedade):", e);
-                    }
-                }
-                
-                // NOTA IMPORTANTE: Para resolver os erros de 'Missing or insufficient permissions' e CORS/Storage,
-                // você PRECISA configurar as Regras de Segurança do Firebase Firestore e Storage no
-                // Console do Firebase, permitindo a escrita de usuários autenticados na coleção 'registrations'
-                // e nos paths de storage 'user_photos/{userId}/...' e 'user_docs/{userId}/...'.
 
-                // 2. Coletar dados do formulário
+                if (rgFile) {
+                    console.log("Tentando fazer upload do RG...");
+                    const rgRef = ref(storage, `user_docs/${userId}/${rgFile.name}`);
+                    await uploadBytes(rgRef, rgFile);
+                    rgURL = await getDownloadURL(rgRef);
+                } else {
+                    console.log("Nenhum RG fornecido. Pulando upload.");
+                }
+                
+                // 3. Coletar dados do formulário
                 const formData = getAllFormData('register-form');
                 formData.photoURL = photoURL;
                 formData.rgURL = rgURL;
@@ -1038,7 +1014,8 @@
                 formData.email = tempEmail; // Guardar o email temporário
                 formData.createdAt = new Date().toISOString(); // Data de criação
 
-                // 3. Salvar no Firestore
+                // 4. Salvar no Firestore
+                console.log("Tentando salvar no Firestore...");
                 const docRef = await addDoc(collection(db, "registrations"), formData);
                 
                 console.log("Inscrição enviada com ID:", docRef.id);
@@ -1054,11 +1031,16 @@
             } catch (error) {
                 console.error("Erro ao enviar inscrição:", error);
                 setRegisterLoading(false);
-                registerMessage.textContent = `Erro ao enviar inscrição: ${error.message}`;
+
+                // Diagnóstico para o problema de permissão no Firestore
+                if (error.code && error.code.includes('permission-denied')) {
+                     registerMessage.textContent = 'Erro de Permissão (Firestore). Verifique as Regras de Segurança do Firebase para a coleção "registrations" (allow create: if true;).';
+                } else {
+                    registerMessage.textContent = `Erro ao enviar inscrição: ${error.message}`;
+                }
                 registerMessage.className = 'text-sm text-center text-red-500';
                 
                 // Se deu erro, podemos tentar deletar o usuário temporário
-                // (Opcional, mas boa prática)
                 try {
                     await userCredential.user.delete();
                 } catch (deleteError) {
@@ -1089,7 +1071,7 @@
             
             // Inputs de texto, número, data, select
             form.querySelectorAll('input, select').forEach(input => {
-                if (input.type === 'radio' || input.type === 'checkbox' || input.type === 'file') return; // Handled below
+                if (input.type === 'radio' || input.type === 'checkbox' || input.type === 'file') return; // Handled below or ignored
                 if (input.id) {
                      // Remove 'edit-' prefix if present
                     const key = input.id.startsWith('edit-') ? input.id.substring(5) : input.id;
@@ -1155,8 +1137,8 @@
                 });
                 renderAdminLists();
             }, (error) => {
-                console.error("Erro ao carregar inscrições:", error);
-                pendingList.innerHTML = '<p class="text-red-500">Erro ao carregar dados. Verifique as Regras de Segurança do Firestore.</p>';
+                console.error("Erro ao carregar inscrições: Permissão de Leitura (READ) negada.", error);
+                pendingList.innerHTML = '<p class="text-red-500 font-bold">Erro ao carregar dados. Verifique as Regras de Segurança do Firebase para a permissão de leitura (READ) do administrador.</p>';
             });
         }
 
@@ -1229,37 +1211,49 @@
             
             if (!docId) return;
 
+             // Usar modal customizado ao invés de alert/confirm
+            const showMessage = (msg, isError = false) => {
+                const modal = document.getElementById('details-modal');
+                const p = document.createElement('p');
+                p.textContent = msg;
+                p.className = `mt-2 text-sm text-center ${isError ? 'text-red-500' : 'text-green-600'}`;
+                modal.querySelector('.transform').appendChild(p);
+                setTimeout(() => p.remove(), 3000);
+            };
+
             // Aprovar
             if (target.classList.contains('approve-btn')) {
-                if (confirm('Tem certeza que deseja APROVAR esta inscrição?')) {
+                // Substituir confirm()
+                if (window.confirm('Tem certeza que deseja APROVAR esta inscrição?')) {
                     try {
                         const docRef = doc(db, "registrations", docId);
                         await updateDoc(docRef, { status: "approved" });
                         console.log("Inscrição aprovada:", docId);
+                        showMessage("Inscrição APROVADA.");
                     } catch (error) {
                         console.error("Erro ao aprovar:", error);
-                        // Substituído alert() por console.error (boa prática)
-                        console.error("ERRO: Não foi possível aprovar a inscrição.");
+                        showMessage("Erro ao aprovar.", true);
                     }
                 }
             }
 
             // Rejeitar
             if (target.classList.contains('reject-btn')) {
-                 if (confirm('Tem certeza que deseja REJEITAR esta inscrição?')) {
+                 // Substituir confirm()
+                 if (window.confirm('Tem certeza que deseja REJEITAR esta inscrição? Isso irá remover os arquivos associados (se existirem)!')) {
                     try {
                         const docRef = doc(db, "registrations", docId);
                         const snap = await getDoc(docRef);
                         const data = snap.data() || {};
                         await updateDoc(docRef, { status: "rejected" });
-                        // Remover arquivos associados (só se URL existir para evitar erros em campos vazios)
+                        // Remover arquivos associados (Se existirem)
                         if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
                         if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
                         console.log("Inscrição rejeitada:", docId);
+                        showMessage("Inscrição REJEITADA.", true);
                     } catch (error) {
                         console.error("Erro ao rejeitar:", error);
-                        // Substituído alert() por console.error (boa prática)
-                        console.error("ERRO: Não foi possível rejeitar a inscrição.");
+                        showMessage("Erro ao rejeitar.", true);
                     }
                 }
             }
@@ -1286,8 +1280,8 @@
 
                 if (!docSnap.exists()) {
                     console.error("Documento não encontrado");
-                    // Substituído alert() por console.error (boa prática)
-                    console.error("ERRO: Documento não encontrado.");
+                    // Substituir alert()
+                    window.alert("Documento não encontrado.");
                     return;
                 }
 
@@ -1295,7 +1289,8 @@
                 
                 // Preencher o formulário de edição
                 document.getElementById('edit-doc-id').value = docId;
-                document.getElementById('edit-foto-preview').src = data.photoURL || 'https://placehold.co/150x150/e0e0e0/7c7c7c?text=Foto';
+                // Fallback para placeholder se não houver URL
+                document.getElementById('edit-foto-preview').src = data.photoURL || 'https://placehold.co/150x150/e0e0e0/7c7c7c?text=Foto'; 
                 document.getElementById('edit-rg-link').href = data.rgURL || '#';
                 document.getElementById('edit-status').value = data.status || 'pending';
 
@@ -1320,14 +1315,14 @@
                 const camisaRadio = document.querySelector(`input[name="edit-camisa"][value="${data.camisa}"]`);
                 if (camisaRadio) {
                     camisaRadio.checked = true;
-                } else if (data.camisa && data.camisa.includes('Outro')) {
+                    document.getElementById('edit-camisaOutro').value = '';
+                } else if (data.camisa) {
                     // É "Outro"
-                    document.querySelector(`input[name="edit-camisa"][value="Outro"]`).checked = true;
-                    // Tenta extrair o valor do "Outro"
-                    const match = data.camisa.match(/Outro: (.*)/);
-                    document.getElementById('edit-camisaOutro').value = match ? match[1] : data.camisa.replace('Outro: ', '').trim();
+                    const outroRadio = document.querySelector(`input[name="edit-camisa"][value="Outro"]`);
+                    if(outroRadio) outroRadio.checked = true;
+                    document.getElementById('edit-camisaOutro').value = data.camisa;
                 }
-
+                
                 // Preencher campos Sim/Não com "Qual"
                  ['alergias', 'cirurgiaRecente', 'tratamentoMedico', 'tomaMedicamento', 'problemaOrtopedico'].forEach(key => {
                      const elSelect = document.getElementById(`edit-${key}`);
@@ -1349,22 +1344,21 @@
                  });
 
 
-                // Mostrar o modal
+                // Mostrar o modal (Ajustado para display:none/flex)
                 detailsModal.style.display = 'flex';
-                setTimeout(() => detailsModal.style.opacity = 1, 10);
+                // Timeout para permitir a transição de opacidade
+                setTimeout(() => detailsModal.style.opacity = 1, 10); 
 
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
-                // Substituído alert() por console.error (boa prática)
-                console.error("ERRO: Ao carregar dados para edição.");
+                // Substituir alert()
+                window.alert("Erro ao carregar dados para edição.");
             }
         }
 
         closeModalBtn.addEventListener('click', () => {
             detailsModal.style.opacity = 0;
-            setTimeout(() => {
-                detailsModal.style.display = 'none';
-            }, 300);
+            setTimeout(() => detailsModal.style.display = 'none', 300);
             currentEditingDocId = null;
         });
         
@@ -1405,8 +1399,10 @@
         modalDeleteBtn.addEventListener('click', async () => {
             if (!currentEditingDocId) return;
             
-            // Substituído confirm() por uma mensagem mais informativa no console
-            console.warn('Confirmação de deleção: Se o modal não tiver uma confirmação visual, o usuário precisa recarregar a página para cancelar.');
+            // Substituir confirm()
+            if (!window.confirm('TEM CERTEZA? Esta ação é irreversível e irá deletar o cadastro permanentemente e seus arquivos.')) {
+                return;
+            }
             
             modalMessage.textContent = 'Deletando...';
             
@@ -1414,11 +1410,9 @@
                 const docRef = doc(db, "registrations", currentEditingDocId);
                 const snap = await getDoc(docRef);
                 const data = snap.data() || {};
-                
-                // Deleta arquivos se existirem URLs
+                // Tenta deletar arquivos antes de deletar o documento
                 if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
                 if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
-                
                 await deleteDoc(docRef);
                 
                 modalMessage.textContent = 'Deletado com sucesso!';
@@ -1445,8 +1439,8 @@
             });
 
             if (selectedFields.length === 0) {
-                 // Substituído alert() por console.error (boa prática)
-                console.error("ERRO: Por favor, selecione pelo menos um campo para o relatório.");
+                // Substituir alert()
+                window.alert("Por favor, selecione pelo menos um campo para o relatório.");
                 return;
             }
 
@@ -1495,14 +1489,14 @@
             const rows = [];
             filteredUsers.forEach(user => {
                 bodyHtml += '<tr>';
-                const row = []; // Array para armazenar os dados da linha para exportação
+                const row = []; // Array para exportação
                 selectedFields.forEach(field => {
                     const value = user[field] || 'N/A';
                     bodyHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${value}</td>`;
                     row.push(value);
                 });
                 bodyHtml += '</tr>';
-                rows.push(row); // Adiciona a linha de dados completa
+                rows.push(row);
             });
             reportTableBody.innerHTML = bodyHtml;
 
@@ -1510,27 +1504,28 @@
 
             // Guardar dados para exportação
             const headers = [];
-            reportTableHead.querySelectorAll('th').forEach(th => headers.push(th.textContent.trim()));
-            
-            lastReportData = { headers, rows };
+            reportTableHead.querySelectorAll('th').forEach(th => headers.push(th.textContent));
+            lastReportData = { headers, rows: rows };
         });
         
         // Exportar para CSV
         exportCsvBtn.addEventListener('click', () => {
+            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
             const table = document.getElementById('report-table');
             let csv = [];
             
             // Cabeçalho
             const headers = [];
-            table.querySelectorAll('thead th').forEach(th => headers.push(`"${th.textContent.trim()}"`));
+            table.querySelectorAll('thead th').forEach(th => headers.push(`"${th.textContent}"`));
             csv.push(headers.join(','));
             
             // Linhas
-            table.querySelectorAll('tbody tr').forEach(row => {
-                const rowData = [];
-                row.querySelectorAll('td').forEach(td => rowData.push(`"${td.textContent}"`));
+            lastReportData.rows.forEach(row => {
+                 // Certifique-se de que cada valor é envolto em aspas e faz o escape de aspas internas
+                const rowData = row.map(v => `"${String(v).replace(/"/g, '""')}"`);
                 csv.push(rowData.join(','));
             });
+
 
             const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
             const encodedUri = encodeURI(csvContent);
@@ -1544,10 +1539,7 @@
 
         // Exportar para XLSX
         exportXlsxBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { 
-                console.error('ERRO: Gere o relatório antes de exportar para XLSX.');
-                return; 
-            }
+            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
             const aoa = [ lastReportData.headers, ...lastReportData.rows ];
             const ws = XLSX.utils.aoa_to_sheet(aoa);
             const wb = XLSX.utils.book_new();
@@ -1557,10 +1549,7 @@
 
         // Exportar para PDF
         exportPdfBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { 
-                console.error('ERRO: Gere o relatório antes de exportar para PDF.'); 
-                return; 
-            }
+            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
             const title = 'Relatório Projeto Zumba';
@@ -1581,17 +1570,10 @@
         
         
         // Inicializar ícones
+        // Lucide precisa ser criado manualmente
         if (window.lucide) {
             lucide.createIcons();
         }
-        
-        // Inicialização de funcionalidades adicionais
-        document.addEventListener('DOMContentLoaded', () => {
-            // Garante que o número de inscrição é gerado se a view de cadastro for a primeira a ser mostrada (improvável)
-            if (!registerView.classList.contains('hidden-section')) {
-                generateInscricaoNumber();
-            }
-        });
 
     </script>
 </body>
