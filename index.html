@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
+    <!-- Chart.js para gráficos de relatórios -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <!-- Ícones (Lucide) -->
     <script src="https://unpkg.com/lucide-react@latest/dist/lucide-react.js"></script>
     <script src="https://unpkg.com/lucide-icons@latest/dist/lucide.min.js"></script>
@@ -33,31 +36,51 @@
         }
 
         .btn-zumba {
-            @apply px-6 py-3 font-bold text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105;
-            background: linear-gradient(135deg, #ec4899, #e11d48); /* Pink -> Rose */
+            /* substitui @apply por CSS para funcionar com CDN */
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.75rem 1.25rem; border-radius: 0.75rem; font-weight: 700;
+            color: #ffffff; background: linear-gradient(135deg, #ec4899, #e11d48);
+            box-shadow: 0 10px 24px rgba(236, 72, 153, 0.35);
+            transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
         }
-        
+        .btn-zumba:hover { transform: translateY(-1px) scale(1.03); filter: brightness(1.02); }
+        .btn-zumba:active { transform: scale(0.98); }
+
         .btn-zumba-alt {
-            @apply px-6 py-3 font-bold text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105;
-            background: linear-gradient(135deg, #a3e635, #4d7c0f); /* Verde-limão -> Verde escuro */
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.75rem 1.25rem; border-radius: 0.75rem; font-weight: 700;
+            color: #ffffff; background: linear-gradient(135deg, #22d3ee, #10b981);
+            box-shadow: 0 10px 24px rgba(16, 185, 129, 0.35);
+            transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
         }
-        
+        .btn-zumba-alt:hover { transform: translateY(-1px) scale(1.03); filter: brightness(1.02); }
+        .btn-zumba-alt:active { transform: scale(0.98); }
+
         .btn-zumba-secondary {
-             @apply px-4 py-2 font-semibold text-gray-700 bg-gray-200 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:bg-gray-300 hover:scale-105;
+            display:inline-flex; align-items:center; justify-content:center;
+            padding: 0.5rem 0.9rem; border-radius: 0.6rem; font-weight: 600;
+            background:#e5e7eb; color:#374151; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 200ms ease, background 200ms ease;
         }
+        .btn-zumba-secondary:hover { background:#d1d5db; transform: translateY(-1px); }
 
         /* Estilo para inputs */
         .form-input {
-            @apply w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent;
+            width: 100%; padding: 0.5rem 0.9rem; margin-top: 0.25rem;
+            border-radius: 0.75rem; border: 1px solid #d1d5db; background:#ffffff; color:#111827;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-        
-        .form-select {
-             @apply w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent;
-        }
+        .form-input::placeholder { color:#9ca3af; }
+        .form-input:focus { outline: none; border-color:#ec4899; box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.25); }
 
-        .form-label {
-            @apply block text-sm font-medium text-gray-700;
+        .form-select {
+            width: 100%; padding: 0.5rem 0.9rem; margin-top: 0.25rem;
+            border-radius: 0.75rem; border: 1px solid #d1d5db; background:#ffffff; color:#111827;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
+        .form-select:focus { outline:none; border-color:#ec4899; box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.25); }
+
+        .form-label { display:block; font-size:0.9rem; font-weight:600; color:#374151; }
 
         /* Ocultar/Mostrar seções */
         .hidden-section {
@@ -66,8 +89,15 @@
 
         /* Estilo do Modal */
         #details-modal {
-            @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 transition-opacity duration-300;
+            position: fixed; inset: 0; z-index: 50; display:flex; align-items:center; justify-content:center;
+            background: rgba(0,0,0,0.75); transition: opacity 300ms ease;
         }
+
+        /* Responsividade e ajustes por dispositivo */
+        .is-mobile .container { padding-left: 1rem; padding-right: 1rem; }
+        .is-mobile .btn-zumba, .is-mobile .btn-zumba-alt { width: 100%; }
+        .is-mobile .form-input, .is-mobile .form-select { font-size: 16px; } /* evita zoom no iOS */
+        .device-badge { display:inline-flex; align-items:center; gap:0.4rem; padding:0.25rem 0.5rem; border-radius:999px; background:#f3f4f6; color:#374151; font-weight:600; font-size:0.8rem; }
     </style>
 </head>
 <body class="antialiased text-gray-900">
@@ -82,6 +112,8 @@
                     <div class="text-center">
                         <h1 class="text-4xl font-black zumba-gradient bg-clip-text text-transparent">Projeto Zumba</h1>
                         <p class="mt-2 text-lg text-gray-600">Bem-vindo(a)!</p>
+                        <p class="mt-3 text-sm text-gray-700">Como podemos definir a Zumba? É uma aula de fitness que utiliza vários géneros de dança, mas é, sobretudo, uma aula de sensações: a sensação de felicidade, de alegria, de carinho.</p>
+                        <div id="deviceBadge" class="device-badge mt-3">Modo: Detectando...</div>
                     </div>
                     
                     <!-- Formulário de Login (Admin) -->
@@ -412,7 +444,50 @@
             <!-- Seção: Gerador de Relatórios -->
             <div class="p-6 bg-white rounded-lg shadow-lg">
                 <h2 class="pb-4 text-2xl font-bold border-b border-gray-200">Gerador de Relatórios</h2>
-                <div class="mt-4 space-y-4">
+                
+                <!-- Indicadores rápidos -->
+                <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-4">
+                  <div class="p-4 border rounded-lg">
+                    <div class="text-sm text-gray-500">Aprovados</div>
+                    <div id="kpiAprovados" class="text-2xl font-black">0</div>
+                  </div>
+                  <div class="p-4 border rounded-lg">
+                    <div class="text-sm text-gray-500">Pendentes</div>
+                    <div id="kpiPendentes" class="text-2xl font-black">0</div>
+                  </div>
+                  <div class="p-4 border rounded-lg">
+                    <div class="text-sm text-gray-500">Rejeitados</div>
+                    <div id="kpiRejeitados" class="text-2xl font-black">0</div>
+                  </div>
+                  <div class="p-4 border rounded-lg">
+                    <div class="text-sm text-gray-500">Média de idade</div>
+                    <div id="kpiIdade" class="text-2xl font-black">0</div>
+                  </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
+                  <div class="p-4 border rounded-lg">
+                    <div class="flex items-center justify-between">
+                      <h3 class="text-lg font-semibold">Distribuição por sexo</h3>
+                    </div>
+                    <canvas id="chartSexo" height="160"></canvas>
+                  </div>
+                  <div class="p-4 border rounded-lg">
+                    <div class="flex items-center justify-between">
+                      <h3 class="text-lg font-semibold">Top bairros</h3>
+                    </div>
+                    <canvas id="chartBairro" height="160"></canvas>
+                  </div>
+                  <div class="p-4 border rounded-lg md:col-span-2">
+                    <div class="flex items-center justify-between">
+                      <h3 class="text-lg font-semibold">Inscrições por mês</h3>
+                    </div>
+                    <canvas id="chartMes" height="140"></canvas>
+                  </div>
+                </div>
+
+                <div class="mt-6 space-y-4">
                     <p>Selecione os campos que deseja incluir no relatório (de todos os cadastros <span class="font-bold text-green-600">aprovados</span>):</p>
                     
                     <!-- Checkboxes dos Campos -->
@@ -430,6 +505,7 @@
                         <label class="flex items-center"><input type="checkbox" value="hipertenso" class="mr-2 rounded text-pink-500"> Hipertenso</label>
                         <label class="flex items-center"><input type="checkbox" value="diabetico" class="mr-2 rounded text-pink-500"> Diabético</label>
                         <label class="flex items-center"><input type="checkbox" value="cardiaco" class="mr-2 rounded text-pink-500"> Cardíaco</label>
+                         <!-- Os campos dinâmicos serão inseridos aqui via JS -->
                     </div>
 
                     <button id="generate-report-btn" class="btn-zumba">Gerar Relatório</button>
@@ -1295,12 +1371,121 @@
             link.click();
             document.body.removeChild(link);
         });
-        
+
+        // =================================================
+        // KPIs e Gráficos (Dashboard de Relatórios)
+        // =================================================
+        let chartSexo, chartBairro, chartMes;
+
+        function idadeFrom(dobStr) {
+            if (!dobStr) return null; const d = new Date(dobStr); if (isNaN(d)) return null;
+            const diff = Date.now() - d.getTime(); const age = new Date(diff).getUTCFullYear() - 1970; return age;
+        }
+
+        function groupCount(arr, key) {
+            const m = new Map();
+            arr.forEach(r => { const k = r[key] || '—'; m.set(k, (m.get(k)||0)+1); });
+            const labels = Array.from(m.keys()); const values = Array.from(m.values());
+            return { labels, values };
+        }
+
+        function groupByMonth(arr) {
+            const m = new Map();
+            arr.forEach(r => { const created = r.createdAt || r.data || ''; const ym = String(created).slice(0,7); if (!ym) return; m.set(ym, (m.get(ym)||0)+1); });
+            const labels = Array.from(m.keys()).sort(); const values = labels.map(l => m.get(l));
+            return { labels, values };
+        }
+
+        function upsertChart(inst, canvasId, type, labels, values, label) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return null;
+            if (inst) inst.destroy();
+            return new Chart(ctx, {
+                type,
+                data: { labels, datasets: [{ label, data: values, backgroundColor: ['#ec4899','#22d3ee','#a3e635','#f59e0b','#10b981','#8b5cf6'] }] },
+                options: { responsive: true, plugins: { legend: { labels: { color: '#374151' } } }, scales: { x: { ticks: { color: '#6b7280' } }, y: { ticks: { color: '#6b7280' } } } }
+            });
+        }
+
+        function renderDashboard() {
+            const aprovados = allRegistrations.filter(u => u.status === 'approved');
+            const pendentes = allRegistrations.filter(u => u.status === 'pending');
+            const rejeitados = allRegistrations.filter(u => u.status === 'rejected');
+            const idades = aprovados.map(u => idadeFrom(u.dataNascimento)).filter(x => typeof x === 'number');
+            const mediaIdade = idades.length ? Math.round(idades.reduce((a,b)=>a+b,0)/idades.length) : 0;
+
+            const kA = document.getElementById('kpiAprovados');
+            const kP = document.getElementById('kpiPendentes');
+            const kR = document.getElementById('kpiRejeitados');
+            const kI = document.getElementById('kpiIdade');
+            if (kA) kA.textContent = String(aprovados.length);
+            if (kP) kP.textContent = String(pendentes.length);
+            if (kR) kR.textContent = String(rejeitados.length);
+            if (kI) kI.textContent = String(mediaIdade);
+
+            const sexo = groupCount(aprovados, 'sexo');
+            const bairros = groupCount(aprovados, 'bairro');
+            const meses = groupByMonth(aprovados);
+            chartSexo = upsertChart(chartSexo, 'chartSexo', 'pie', sexo.labels, sexo.values, 'Sexo');
+            chartBairro = upsertChart(chartBairro, 'chartBairro', 'bar', bairros.labels.slice(0,10), bairros.values.slice(0,10), 'Top 10 Bairros');
+            chartMes = upsertChart(chartMes, 'chartMes', 'line', meses.labels, meses.values, 'Inscrições por mês');
+        }
+
+        // Geração dinâmica de campos de relatório a partir dos dados aprovados
+        function ensureDynamicReportFields() {
+            const container = document.getElementById('report-fields');
+            if (!container) return;
+            const aprovados = allRegistrations.filter(u => u.status === 'approved');
+            if (aprovados.length === 0) return;
+            const sample = aprovados[0];
+            const existing = new Set(Array.from(container.querySelectorAll('input[type="checkbox"]')).map(i => i.value));
+            const keys = Object.keys(sample).filter(k => typeof sample[k] !== 'object' && !existing.has(k));
+            keys.forEach(k => {
+                const label = (k === 'dataNascimento') ? 'Data Nasc.' : (k === 'createdAt' ? 'Criado em' : k);
+                const el = document.createElement('label');
+                el.className = 'flex items-center';
+                el.innerHTML = `<input type="checkbox" value="${k}" class="mr-2 rounded text-pink-500"> ${label}`;
+                container.appendChild(el);
+            });
+        }
+
+        // Atualizar dashboards e campos dinâmicos sempre que chegarem dados
+        function onDataUpdated() {
+            renderDashboard();
+            ensureDynamicReportFields();
+        }
+
+        // Hook no snapshot: após atualizar listas, também renderizar dashboard
+        const _origOnSnapshotHandler = loadAdminPanelData;
+        // Mantemos a função original e chamamos onDataUpdated quando os dados mudarem (dentro de loadAdminPanelData já atualiza allRegistrations)
+        // Para garantir, chamamos após 200ms em cada atualização
+        const _oldLoadAdminPanelData = loadAdminPanelData;
+        loadAdminPanelData = function() { _oldLoadAdminPanelData(); setTimeout(onDataUpdated, 200); };
+
+        // Render inicial (se já houver dados)
+        setTimeout(onDataUpdated, 500);
+
         
         // Inicializar ícones
         if (window.lucide) {
             lucide.createIcons();
         }
+
+        // =================================================
+        // Detecção de dispositivo (Mobile vs Desktop)
+        // =================================================
+        function detectDevice() {
+            const ua = navigator.userAgent.toLowerCase();
+            const isMobileUA = /mobi|android|iphone|ipad|tablet/.test(ua);
+            const isSmall = matchMedia('(max-width: 768px)').matches;
+            const isMobile = isMobileUA || isSmall;
+            document.body.classList.toggle('is-mobile', isMobile);
+            document.body.classList.toggle('is-desktop', !isMobile);
+            const badge = document.getElementById('deviceBadge');
+            if (badge) badge.textContent = `Modo: ${isMobile ? 'Mobile' : 'Desktop'}`;
+        }
+        window.addEventListener('resize', detectDevice);
+        detectDevice();
 
     </script>
 </body>
