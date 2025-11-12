@@ -12,9 +12,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-    <!-- Ícones (Lucide) -->
-    <script src="https://unpkg.com/lucide-react@latest/dist/lucide-react.js"></script>
-    <script src="https://unpkg.com/lucide-icons@latest/dist/lucide.min.js"></script>
+    <!-- Ícones (Lucide) - CORRIGIDO -->
+    <!-- O script 'lucide-react' foi removido pois é para projetos React. -->
+    <!-- O script 'lucide-icons' foi substituído pelo UMD (para browser) correto. -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
     <!-- Export libs -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -110,11 +112,12 @@
             position: fixed;
             inset: 0;
             z-index: 50;
-            display: flex;
+            display: none; /* Padrão oculto */
             align-items: center;
             justify-content: center;
             background: rgba(0,0,0,0.75);
             transition: opacity 300ms ease-in-out;
+            opacity: 0; /* Padrão transparente */
         }
     </style>
 </head>
@@ -560,7 +563,7 @@
 
 
         <!-- ===== MODAL DE DETALHES/EDIÇÃO ===== -->
-        <div id="details-modal" class="hidden-section opacity-0" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div id="details-modal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="transform w-full max-w-4xl p-6 mx-4 bg-white rounded-2xl shadow-xl transition-all sm:mx-0">
                 <div class="flex items-start justify-between">
                     <h2 class="text-2xl font-bold text-gray-900" id="modal-title">Detalhes da Inscrição</h2>
@@ -1270,8 +1273,8 @@
 
 
                 // Mostrar o modal
-                detailsModal.classList.remove('hidden-section');
-                setTimeout(() => detailsModal.classList.remove('opacity-0'), 10);
+                detailsModal.style.display = 'flex';
+                setTimeout(() => detailsModal.style.opacity = 1, 10);
 
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
@@ -1280,8 +1283,10 @@
         }
 
         closeModalBtn.addEventListener('click', () => {
-            detailsModal.classList.add('opacity-0');
-            setTimeout(() => detailsModal.classList.add('hidden-section'), 300);
+            detailsModal.style.opacity = 0;
+            setTimeout(() => {
+                detailsModal.style.display = 'none';
+            }, 300);
             currentEditingDocId = null;
         });
         
