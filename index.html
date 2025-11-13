@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-    <!-- Ícones (Lucide) -->
+    <!-- Ícones (Lucide) - Usando link direto para o script que cria os ícones -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Export libs -->
@@ -307,7 +307,7 @@
                     
                     <!-- Seção 3: Medidas e Uploads -->
                     <fieldset class="p-4 border rounded-lg">
-                        <legend class="px-2 text-lg font-bold text-gray-800">Medidas e Arquivos</legend>
+                        <legend class="px-2 text-lg font-bold text-gray-800">Medidas</legend>
                         <div>
                             <label class="form-label">Medida da Camisa</label>
                             <div class="flex flex-wrap gap-4 mt-2">
@@ -322,20 +322,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
-                            <div>
-                                <label for="uploadFoto" class="form-label">Sua Foto (3x4) - *Opcional*</label>
-                                <!-- Storage não está configurado, upload não funcionará sem regras -->
-                                <input type="file" id="uploadFoto" class="form-input" accept="image/*">
-                                <span class="text-xs text-gray-500">Para identificação. (Upload desabilitado temporariamente)</span>
-                            </div>
-                            <div>
-                                <label for="uploadRG" class="form-label">Documento RG (Frente e Verso) - *Opcional*</label>
-                                <!-- Storage não está configurado, upload não funcionará sem regras -->
-                                <input type="file" id="uploadRG" class="form-input" accept="image/*,application/pdf">
-                                <span class="text-xs text-gray-500">Pode ser foto ou PDF. (Upload desabilitado temporariamente)</span>
-                            </div>
-                        </div>
+                        <!-- CAMPOS DE UPLOAD DE ARQUIVO REMOVIDOS -->
                     </fieldset>
 
                     <!-- Seção 4: Histórico Patológico -->
@@ -474,11 +461,24 @@
                 </div>
             </div>
 
+            <!-- Seção: Gestão de Todos os Participantes -->
+            <div class="p-6 bg-white rounded-lg shadow-lg">
+                <div class="pb-4 border-b border-gray-200">
+                    <h2 class="text-2xl font-bold">Gestão de Todos os Participantes</h2>
+                    <p class="text-sm text-gray-500">Edite, aprove ou rejeite qualquer inscrição. Use a busca e o filtro acima.</p>
+                </div>
+                <div id="all-participants-list" class="mt-4 space-y-4">
+                    <!-- Todos os participantes (filtrados) serão injetados aqui -->
+                    <p id="no-participants-message">Nenhum participante encontrado.</p>
+                </div>
+            </div>
+
             <!-- Seção: Gerador de Relatórios -->
             <div class="p-6 bg-white rounded-lg shadow-lg">
                 <h2 class="pb-4 text-2xl font-bold border-b border-gray-200">Gerador de Relatórios</h2>
                 <div class="mt-4 space-y-4">
                     <p>Selecione os campos e filtros do relatório:</p>
+                    <p id="report-data-status" class="text-sm text-gray-600 italic">Carregando dados...</p>
 
                     <!-- Filtros -->
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -581,10 +581,10 @@
                     <form id="edit-form" class="space-y-6">
                         <input type="hidden" id="edit-doc-id">
                         
+                        <!-- REMOVIDA A SEÇÃO DE VISUALIZAÇÃO DE FOTO E RG -->
                         <div class="flex flex-col items-center gap-4 md:flex-row">
-                            <img id="edit-foto-preview" src="https://placehold.co/150x150/e0e0e0/7c7c7c?text=Foto" alt="Foto do Perfil" class="object-cover w-32 h-32 rounded-lg shadow-md">
                             <div class="flex-1">
-                                <a id="edit-rg-link" href="#" target="_blank" class="block w-full text-center btn-zumba-secondary">Ver Documento RG (Upload desabilitado)</a>
+                                <h3 class="text-lg font-semibold text-center" id="edit-nome-display">Carregando...</h3>
                                 <div class="mt-4">
                                      <label for="edit-status" class="form-label">Status da Inscrição</label>
                                      <select id="edit-status" class="form-select">
@@ -730,6 +730,9 @@
             // getDocs, // Não usado
             setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // IMPORTAÇÕES DO STORAGE REMOVIDAS
+        /*
         import { 
             getStorage, 
             ref, 
@@ -737,12 +740,13 @@
             getDownloadURL,
             deleteObject
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        */
 
         // ==================================================================
-        // CONFIGURAÇÃO DO FIREBASE (ATUALIZADA)
+        // CONFIGURAÇÃO
         // ==================================================================
         
-        // Configuração do Firebase fornecida pelo usuário
+        // Configuração do Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyCrH_LFHenyWx-ITRCTWeNVqf8O-0e3pJY",
           authDomain: "zumba-2a827.firebaseapp.com",
@@ -752,21 +756,10 @@
           appId: "1:325248310095:web:2673845967b7bc60f6833a"
         };
         
-        // ==================================================================
-        // !! AÇÃO OBRIGATÓRIA !!
-        // ==================================================================
-        //
-        // 1. Vá ao painel do seu projeto Firebase 'zumba-2a827'
-        // 2. Vá para 'Authentication' -> 'Users'.
-        // 3. Crie um usuário (ou use um existente) para ser o Administrador.
-        // 4. Copie o 'User UID' desse usuário.
-        // 5. COLE O UID AQUI:
-        //
+        // UID do Administrador
         const ADMIN_UID = "mNenvFEpf1SnDCY2kXLUaDlgtP03"; 
-        // 
-        // ==================================================================
         
-        // Nome da coleção de inscrições
+        // NOME DA COLEÇÃO
         const INSCRICOES_COLLECTION = "inscricoes_zumba";
         
         // ==================================================================
@@ -774,25 +767,25 @@
         // ==================================================================
 
         // Inicialização do Firebase
-        let app, auth, db, storage;
+        var app, auth, db; // Variável 'storage' removida. Usando 'var' para compatibilidade.
         try {
             // VERIFICAÇÃO DO ADMIN_UID
-            if (ADMIN_UID === "COLE_SEU_ADMIN_UID_AQUI" || ADMIN_UID.trim() === "") {
-                throw new Error("O 'ADMIN_UID' não foi definido. Edite o arquivo index.html na linha 938.");
+            if (ADMIN_UID === "COLE_SEU_ADMIN_UID_AQUI") {
+                throw new Error("ADMIN_UID não foi configurado.");
             }
             
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
-            storage = getStorage(app);
+            // storage = getStorage(app); // Inicialização 'storage' removida
             setLogLevel('Debug'); // Para ver logs no console
             console.log("Firebase inicializado com sucesso.");
         } catch (error) {
             console.error("Erro ao inicializar o Firebase:", error);
             document.body.innerHTML = `<div class="p-8 text-center text-red-600 bg-red-100">
                 <h1 class="text-2xl font-bold">Erro de Configuração do Firebase</h1>
-                <p class="mt-2">Não foi possível conectar ao Firebase. Verifique se o objeto 'firebaseConfig' está correto e se o 'ADMIN_UID' foi preenchido no arquivo HTML (linha 938).</p>
-                <p class="mt-1 text-sm">Abra o console (F12) para mais detalhes. (Erro: ${error.message})</p>
+                <p class="mt-2">Não foi possível conectar ao Firebase. Verifique se o objeto 'firebaseConfig' está correto e se o 'ADMIN_UID' (linha 938) foi preenchido.</p>
+                <p class="mt-1 text-sm">Abra o console (F12) para mais detalhes.</p>
                 </div>`;
         }
 
@@ -820,6 +813,9 @@
         const noPendingMsg = document.getElementById('no-pending-message');
         const rejectedList = document.getElementById('rejected-registrations-list');
         const noRejectedMsg = document.getElementById('no-rejected-message');
+        // NOVAS REFERÊNCIAS
+        const allParticipantsList = document.getElementById('all-participants-list');
+        const noParticipantsMsg = document.getElementById('no-participants-message');
 
         const detailsModal = document.getElementById('details-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
@@ -839,7 +835,7 @@
         const dateStartInput = document.getElementById('report-date-start');
         const dateEndInput = document.getElementById('report-date-end');
         const cityFilterInput = document.getElementById('report-city-filter');
-        let lastReportData = { headers: [], rows: [] };
+        var lastReportData = { headers: [], rows: [] }; // Usando 'var'
 
         // =================================================
         // Lógica de Navegação e Helpers
@@ -873,7 +869,7 @@
             if (birthDateStr) {
                 const today = new Date();
                 const birthDate = new Date(birthDateStr);
-                let age = today.getFullYear() - birthDate.getFullYear();
+                var age = today.getFullYear() - birthDate.getFullYear(); // Usando 'var'
                 const m = today.getMonth() - birthDate.getMonth();
 
                 if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
@@ -906,8 +902,8 @@
                     showView('admin-panel');
                     loadAdminPanelData();
                 } else {
-                    // É um usuário comum (deve ser deslogado)
-                    console.log("Usuário comum logado, deslogando:", user.uid);
+                    // É um usuário comum (situação inesperada, deslogar)
+                    console.warn("Usuário não-admin logado, deslogando:", user.uid);
                     signOut(auth);
                     showView('login-view');
                 }
@@ -947,7 +943,7 @@
         });
 
         // =================================================
-        // Lógica de Cadastro do Usuário (Simplificada)
+        // Lógica de Cadastro do Usuário
         // =================================================
 
         // Gerar campos de saúde
@@ -977,33 +973,22 @@
             setRegisterLoading(true);
             registerMessage.textContent = '';
 
-            // const fotoFile = document.getElementById('uploadFoto').files[0]; // Desabilitado
-            // const rgFile = document.getElementById('uploadRG').files[0]; // Desabilitado
+            // Lógica de upload de arquivos (fotoFile, rgFile) removida.
             
             try {
                 // O upload de arquivos (Storage) não está sendo feito,
-                // pois requer regras de segurança específicas e o código
-                // original também não estava completando essa etapa.
+                // então não precisamos de URLs (photoURL, rgURL).
                 
-                /*
-                let photoURL = null;
-                let rgURL = null;
-                if (fotoFile) { ... }
-                if (rgFile) { ... }
-                */
-
                 // 1. Coletar dados do formulário
-                const formData = getAllFormData('register-form');
-                formData.photoURL = null; // Upload desabilitado
-                formData.rgURL = null;    // Upload desabilitado
-                formData.userId = null;   // Inscrição anônima
+                var formData = getAllFormData('register-form'); // Usando 'var'
+                formData.photoURL = null; // Removido
+                formData.rgURL = null; // Removido
                 formData.status = 'pending';
-                formData.email = null;    // Inscrição anônima
                 formData.createdAt = new Date().toISOString();
+                // Não criamos mais usuário temporário, então não temos userId ou email aqui
 
                 // 2. Salvar no Firestore
-                // (As novas regras de segurança permitirão esta escrita)
-                console.log("Tentando salvar no Firestore (anônimo) na coleção:", INSCRICOES_COLLECTION);
+                console.log("Tentando salvar no Firestore na coleção:", INSCRICOES_COLLECTION);
                 const docRef = await addDoc(collection(db, INSCRICOES_COLLECTION), formData);
                 
                 console.log("Inscrição enviada com ID:", docRef.id);
@@ -1012,10 +997,8 @@
                 registerMessage.className = 'text-sm text-center text-green-600';
                 registerForm.reset();
                 
-                // Mostrar mensagem e voltar para o login
-                setTimeout(() => {
-                    showView('login-view'); 
-                }, 3000); // Espera 3 segundos para o usuário ler a msg
+                // Não precisamos deslogar, pois o usuário nunca foi logado
+                showView('login-view'); // Voltar para o login
 
             } catch (error) {
                 console.error("Erro ao enviar inscrição:", error);
@@ -1023,7 +1006,7 @@
 
                 // Diagnóstico para o problema de permissão no Firestore
                 if (error.code && error.code.includes('permission-denied')) {
-                     registerMessage.textContent = `Erro de Permissão (Firestore). Verifique se você aplicou as novas Regras de Segurança do Firebase para a coleção "${INSCRICOES_COLLECTION}" (allow create: if true;).`;
+                     registerMessage.textContent = `Erro de Permissão (Firestore). Verifique as Regras de Segurança do Firebase para a coleção "${INSCRICOES_COLLECTION}" (allow create: if true;).`;
                 } else {
                     registerMessage.textContent = `Erro ao enviar inscrição: ${error.message}`;
                 }
@@ -1049,7 +1032,7 @@
         function getAllFormData(formId) {
             const form = document.getElementById(formId);
             const formData = new FormData(form);
-            const data = {};
+            var data = {}; // Usando 'var'
             
             // Inputs de texto, número, data, select
             form.querySelectorAll('input, select').forEach(input => {
@@ -1096,8 +1079,8 @@
         // Lógica do Painel Admin
         // =================================================
         
-        let allRegistrations = []; // Cache para relatórios
-        let allRegistrationsUnsubscribe = null; // Listener do Firestore
+        var allRegistrations = []; // Cache para relatórios. Usando 'var'
+        var allRegistrationsUnsubscribe = null; // Listener do Firestore. Usando 'var'
         const adminSearchInput = document.getElementById('admin-search');
         const adminSortSelect = document.getElementById('admin-sort');
 
@@ -1117,9 +1100,13 @@
                     const docId = doc.id;
                     allRegistrations.push({ id: docId, ...data });
                 });
+                // ATUALIZA O STATUS DO RELATÓRIO
+                document.getElementById('report-data-status').textContent = `${allRegistrations.length} registros carregados.`;
                 renderAdminLists();
             }, (error) => {
                 console.error("Erro ao carregar inscrições: Permissão de Leitura (READ) negada.", error);
+                // ATUALIZA O STATUS DO RELATÓRIO
+                document.getElementById('report-data-status').textContent = 'Erro ao carregar dados. Verifique as permissões.';
                 pendingList.innerHTML = `<p class="text-red-500 font-bold">Erro ao carregar dados. Verifique as Regras de Segurança do Firebase para a permissão de leitura (READ) do administrador (request.auth != null) na coleção "${INSCRICOES_COLLECTION}".</p>`;
             });
         }
@@ -1128,8 +1115,9 @@
             const q = (adminSearchInput?.value || '').toLowerCase().trim();
             const sort = adminSortSelect?.value || 'date_desc';
 
-            const pending = [];
-            const rejected = [];
+            var pending = []; // Usando 'var'
+            var rejected = []; // Usando 'var'
+            var all_participants = []; // Nova lista. Usando 'var'
 
             const matchesQuery = (d) => {
                 if (!q) return true;
@@ -1147,10 +1135,43 @@
 
             sorted.forEach(({id, ...data}) => {
                 if (!matchesQuery(data)) return;
-                const cardHtml = `
+
+                // Definir cor e texto do status
+                var statusClass = 'text-yellow-600 bg-yellow-100'; // Usando 'var'
+                var statusText = 'Pendente'; // Usando 'var'
+                if (data.status === 'approved') {
+                    statusClass = 'text-green-600 bg-green-100';
+                    statusText = 'Aprovado';
+                } else if (data.status === 'rejected') {
+                    statusClass = 'text-red-600 bg-red-100';
+                    statusText = 'Rejeitado';
+                }
+
+                // Card para a lista PENDENTE/REJEITADA (como antes)
+                const cardHtmlSimple = `
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm border">
                         <div>
                             <p class="font-bold text-lg">${data.nome || 'Nome não informado'}</p>
+                            <p class="text-sm text-gray-600">${data.email || data.cpf || 'Sem identificador'}</p>
+                            <p class="text-xs text-gray-500">Enviado em: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button data-id="${id}" class="view-btn btn-zumba-secondary text-sm !px-3 !py-1">Ver/Editar</button>
+                            ${data.status === 'pending' ? `<button data-id="${id}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Aprovar</button>` : ''}
+                            ${data.status !== 'rejected' ? `<button data-id="${id}" class="reject-btn btn-zumba text-sm !px-3 !py-1">Rejeitar</button>` : ''}
+                            ${data.status === 'rejected' ? `<button data-id="${id}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Re-Aprovar</button>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Card para a lista GERAL (com status visível)
+                const cardHtmlGestao = `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm border">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <p class="font-bold text-lg">${data.nome || 'Nome não informado'}</p>
+                                <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${statusClass}">${statusText}</span>
+                            </div>
                             <p class="text-sm text-gray-600">${data.cpf || data.rg || 'Sem documento'}</p>
                             <p class="text-xs text-gray-500">Enviado em: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}</p>
                         </div>
@@ -1162,8 +1183,11 @@
                         </div>
                     </div>
                 `;
-                if (data.status === 'pending') pending.push(cardHtml);
-                else if (data.status === 'rejected') rejected.push(cardHtml);
+
+                if (data.status === 'pending') pending.push(cardHtmlSimple);
+                else if (data.status === 'rejected') rejected.push(cardHtmlSimple);
+                
+                all_participants.push(cardHtmlGestao); // Adiciona todos na lista de gestão
             });
 
             if (pending.length) {
@@ -1181,6 +1205,15 @@
                 rejectedList.innerHTML = '';
                 noRejectedMsg.classList.remove('hidden-section');
             }
+            
+            // Popula a nova lista de Gestão
+            if (all_participants.length) {
+                allParticipantsList.innerHTML = all_participants.join('');
+                noParticipantsMsg.classList.add('hidden-section');
+            } else {
+                allParticipantsList.innerHTML = '';
+                noParticipantsMsg.classList.remove('hidden-section');
+            }
         }
 
         adminSearchInput?.addEventListener('input', renderAdminLists);
@@ -1195,52 +1228,50 @@
 
              // Usar modal customizado ao invés de alert/confirm
             const showMessage = (msg, isError = false) => {
-                const modal = document.getElementById('details-modal');
-                const p = document.createElement('p');
-                p.textContent = msg;
-                p.className = `mt-2 text-sm text-center ${isError ? 'text-red-500' : 'text-green-600'}`;
-                modal.querySelector('.transform').appendChild(p);
-                setTimeout(() => p.remove(), 3000);
+                // Mensagem no Modal
+                if (detailsModal.style.display === 'flex') {
+                    modalMessage.textContent = msg;
+                    modalMessage.className = `mt-2 text-sm text-center ${isError ? 'text-red-500' : 'text-green-600'}`;
+                    setTimeout(() => modalMessage.textContent = '', 3000);
+                } else {
+                    // Substituir alert() simples
+                    console.log(msg);
+                }
             };
-            
-            // (Substituindo window.confirm por um modal customizado se necessário)
-            // Usando window.confirm por simplicidade, já que o original usava
-            const customConfirm = (message) => {
-                 // Esta é uma implementação simples. O ideal seria um modal.
-                 return window.confirm(message);
-            }
 
             // Aprovar
             if (target.classList.contains('approve-btn')) {
-                if (customConfirm('Tem certeza que deseja APROVAR esta inscrição?')) {
+                // Substituir confirm()
+                if (window.confirm('Tem certeza que deseja APROVAR esta inscrição?')) {
                     try {
                         const docRef = doc(db, INSCRICOES_COLLECTION, docId);
                         await updateDoc(docRef, { status: "approved" });
                         console.log("Inscrição aprovada:", docId);
-                        // showMessage("Inscrição APROVADA."); // Msg no modal não é útil se o modal não estiver aberto
+                        showMessage("Inscrição APROVADA.");
                     } catch (error) {
                         console.error("Erro ao aprovar:", error);
-                        // showMessage("Erro ao aprovar.", true);
+                        showMessage("Erro ao aprovar.", true);
                     }
                 }
             }
 
             // Rejeitar
             if (target.classList.contains('reject-btn')) {
-                 if (customConfirm('Tem certeza que deseja REJEITAR esta inscrição?')) {
+                 // Substituir confirm()
+                 if (window.confirm('Tem certeza que deseja REJEITAR esta inscrição?')) {
                     try {
                         const docRef = doc(db, INSCRICOES_COLLECTION, docId);
-                        // const snap = await getDoc(docRef); // Não é mais necessário para deletar storage
-                        // const data = snap.data() || {};
+                        // const snap = await getDoc(docRef); // Não precisamos mais buscar dados de storage
+                        // const data = snap.data() || {}; // Não precisamos mais
                         await updateDoc(docRef, { status: "rejected" });
                         
-                        // Lógica de Storage removida - não há arquivos para deletar
+                        // Lógica de deletar arquivos (Storage) removida
                         
                         console.log("Inscrição rejeitada:", docId);
-                        // showMessage("Inscrição REJEITADA.", true);
+                        showMessage("Inscrição REJEITADA.", true);
                     } catch (error) {
                         console.error("Erro ao rejeitar:", error);
-                        // showMessage("Erro ao rejeitar.", true);
+                        showMessage("Erro ao rejeitar.", true);
                     }
                 }
             }
@@ -1255,7 +1286,7 @@
         // Lógica do Modal de Edição
         // =================================================
         
-        let currentEditingDocId = null;
+        var currentEditingDocId = null; // Usando 'var'
 
         async function openDetailsModal(docId) {
             currentEditingDocId = docId;
@@ -1267,8 +1298,8 @@
 
                 if (!docSnap.exists()) {
                     console.error("Documento não encontrado");
-                    // Substituir alert() por um método não bloqueante
-                    modalMessage.textContent = "Erro: Documento não encontrado.";
+                    // Substituir alert()
+                    window.alert("Documento não encontrado.");
                     return;
                 }
 
@@ -1276,9 +1307,8 @@
                 
                 // Preencher o formulário de edição
                 document.getElementById('edit-doc-id').value = docId;
-                // Fallback para placeholder se não houver URL
-                document.getElementById('edit-foto-preview').src = data.photoURL || 'https://placehold.co/150x150/e0e0e0/7c7c7c?text=Foto'; 
-                document.getElementById('edit-rg-link').href = data.rgURL || '#';
+                // Preenchimento de foto e rg removido
+                document.getElementById('edit-nome-display').textContent = data.nome || "Sem nome";
                 document.getElementById('edit-status').value = data.status || 'pending';
 
                 // Preencher todos os inputs
@@ -1338,7 +1368,8 @@
 
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
-                modalMessage.textContent = "Erro ao carregar dados para edição.";
+                // Substituir alert()
+                window.alert("Erro ao carregar dados para edição.");
             }
         }
 
@@ -1356,7 +1387,7 @@
             
             try {
                 // Coletar todos os dados do formulário de edição
-                const formData = getAllFormData('edit-form');
+                var formData = getAllFormData('edit-form'); // Usando 'var'
                 
                 // O status vem do select 'edit-status'
                 formData.status = document.getElementById('edit-status').value;
@@ -1385,6 +1416,7 @@
         modalDeleteBtn.addEventListener('click', async () => {
             if (!currentEditingDocId) return;
             
+            // Substituir confirm()
             if (!window.confirm('TEM CERTEZA? Esta ação é irreversível e irá deletar o cadastro permanentemente.')) {
                 return;
             }
@@ -1393,8 +1425,10 @@
             
             try {
                 const docRef = doc(db, INSCRICOES_COLLECTION, currentEditingDocId);
+                // const snap = await getDoc(docRef); // Não precisamos mais
+                // const data = snap.data() || {}; // Não precisamos mais
                 
-                // Lógica de Storage removida
+                // Lógica de deletar arquivos (Storage) removida
                 
                 await deleteDoc(docRef);
                 
@@ -1416,15 +1450,14 @@
         // =================================================
 
         generateReportBtn.addEventListener('click', () => {
-            const selectedFields = [];
+            var selectedFields = []; // Usando 'var'
             reportFields.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
                 selectedFields.push(cb.value);
             });
 
             if (selectedFields.length === 0) {
                 // Substituir alert()
-                // window.alert("Por favor, selecione pelo menos um campo para o relatório.");
-                console.warn("Nenhum campo selecionado para o relatório.");
+                window.alert("Por favor, selecione pelo menos um campo para o relatório.");
                 return;
             }
 
@@ -1434,7 +1467,7 @@
             const endDateStr = dateEndInput.value;
             const cityFilter = (cityFilterInput.value || '').trim().toLowerCase();
 
-            let filteredUsers = allRegistrations.slice();
+            var filteredUsers = allRegistrations.slice(); // Usando 'var'
             if (status !== 'all') {
                 filteredUsers = filteredUsers.filter(u => (u.status || 'pending') === status);
             }
@@ -1460,7 +1493,7 @@
             }
 
             // Gerar Cabeçalho da Tabela
-            let headHtml = '<tr>';
+            var headHtml = '<tr>'; // Usando 'var'
             selectedFields.forEach(field => {
                 const label = reportFields.querySelector(`input[value="${field}"]`).parentElement.textContent;
                 headHtml += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${label.trim()}</th>`;
@@ -1469,11 +1502,11 @@
             reportTableHead.innerHTML = headHtml;
 
             // Gerar Corpo da Tabela
-            let bodyHtml = '';
-            const rows = [];
+            var bodyHtml = ''; // Usando 'var'
+            var rows = []; // Usando 'var'
             filteredUsers.forEach(user => {
                 bodyHtml += '<tr>';
-                const row = []; // Array para exportação
+                var row = []; // Array para exportação. Usando 'var'
                 selectedFields.forEach(field => {
                     const value = user[field] || 'N/A';
                     bodyHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${value}</td>`;
@@ -1487,19 +1520,19 @@
             reportResultsContainer.classList.remove('hidden-section');
 
             // Guardar dados para exportação
-            const headers = [];
+            var headers = []; // Usando 'var'
             reportTableHead.querySelectorAll('th').forEach(th => headers.push(th.textContent));
             lastReportData = { headers, rows: rows };
         });
         
         // Exportar para CSV
         exportCsvBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { console.warn('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
             const table = document.getElementById('report-table');
-            let csv = [];
+            var csv = []; // Usando 'var'
             
             // Cabeçalho
-            const headers = [];
+            var headers = []; // Usando 'var'
             table.querySelectorAll('thead th').forEach(th => headers.push(`"${th.textContent}"`));
             csv.push(headers.join(','));
             
@@ -1523,7 +1556,7 @@
 
         // Exportar para XLSX
         exportXlsxBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { console.warn('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
             const aoa = [ lastReportData.headers, ...lastReportData.rows ];
             const ws = XLSX.utils.aoa_to_sheet(aoa);
             const wb = XLSX.utils.book_new();
@@ -1533,7 +1566,7 @@
 
         // Exportar para PDF
         exportPdfBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { console.warn('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
             const title = 'Relatório Projeto Zumba';
