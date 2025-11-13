@@ -1,4 +1,4 @@
-<!DOCTYPE html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-    <!-- Ícones (Lucide) - Usando link direto para o script que cria os ícones -->
+    <!-- Ícones (Lucide) -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Export libs -->
@@ -324,16 +324,16 @@
                         </div>
                         <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
                             <div>
-                                <label for="uploadFoto" class="form-label">Sua Foto (3x4) - *Opcional por enquanto*</label>
-                                <!-- Removido 'required' para permitir cadastro sem arquivos -->
+                                <label for="uploadFoto" class="form-label">Sua Foto (3x4) - *Opcional*</label>
+                                <!-- Storage não está configurado, upload não funcionará sem regras -->
                                 <input type="file" id="uploadFoto" class="form-input" accept="image/*">
-                                <span class="text-xs text-gray-500">Para identificação.</span>
+                                <span class="text-xs text-gray-500">Para identificação. (Upload desabilitado temporariamente)</span>
                             </div>
                             <div>
-                                <label for="uploadRG" class="form-label">Documento RG (Frente e Verso) - *Opcional por enquanto*</label>
-                                <!-- Removido 'required' para permitir cadastro sem arquivos -->
+                                <label for="uploadRG" class="form-label">Documento RG (Frente e Verso) - *Opcional*</label>
+                                <!-- Storage não está configurado, upload não funcionará sem regras -->
                                 <input type="file" id="uploadRG" class="form-input" accept="image/*,application/pdf">
-                                <span class="text-xs text-gray-500">Pode ser foto ou PDF.</span>
+                                <span class="text-xs text-gray-500">Pode ser foto ou PDF. (Upload desabilitado temporariamente)</span>
                             </div>
                         </div>
                     </fieldset>
@@ -584,7 +584,7 @@
                         <div class="flex flex-col items-center gap-4 md:flex-row">
                             <img id="edit-foto-preview" src="https://placehold.co/150x150/e0e0e0/7c7c7c?text=Foto" alt="Foto do Perfil" class="object-cover w-32 h-32 rounded-lg shadow-md">
                             <div class="flex-1">
-                                <a id="edit-rg-link" href="#" target="_blank" class="block w-full text-center btn-zumba-secondary">Ver Documento RG</a>
+                                <a id="edit-rg-link" href="#" target="_blank" class="block w-full text-center btn-zumba-secondary">Ver Documento RG (Upload desabilitado)</a>
                                 <div class="mt-4">
                                      <label for="edit-status" class="form-label">Status da Inscrição</label>
                                      <select id="edit-status" class="form-select">
@@ -709,7 +709,7 @@
         import { 
             getAuth, 
             signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword, 
+            // createUserWithEmailAndPassword, // Removido - Não é mais usado para inscrição
             signOut, 
             onAuthStateChanged,
             setPersistence,
@@ -721,13 +721,13 @@
             addDoc, 
             doc, 
             getDoc, 
-            setDoc, 
+            // setDoc, // Não usado no fluxo principal
             updateDoc, 
             deleteDoc, 
             query, 
-            where, 
+            // where, // Não usado
             onSnapshot,
-            getDocs,
+            // getDocs, // Não usado
             setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { 
@@ -739,24 +739,34 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         // ==================================================================
-        // PASSO DE CONFIGURAÇÃO OBRIGATÓRIO (Veja o arquivo configuracao.md)
+        // CONFIGURAÇÃO DO FIREBASE (ATUALIZADA)
         // ==================================================================
         
-        // COLE A CONFIGURAÇÃO DO SEU FIREBASE AQUI
+        // Configuração do Firebase fornecida pelo usuário
         const firebaseConfig = {
-            apiKey: "AIzaSyDBrzQrHMkoBuAPa1l7r7AgSzscCkPfsw8",
-            authDomain: "projeto-zumba-cadastro.firebaseapp.com",
-            projectId: "projeto-zumba-cadastro", // Verifique se este é o ID correto do seu projeto!
-            storageBucket: "projeto-zumba-cadastro.firebasestorage.app",
-            messagingSenderId: "206177270048",
-            appId: "1:206177270048:web:bcbf5d1957c0ee9b78ff45"
+          apiKey: "AIzaSyCrH_LFHenyWx-ITRCTWeNVqf8O-0e3pJY",
+          authDomain: "zumba-2a827.firebaseapp.com",
+          projectId: "zumba-2a827",
+          storageBucket: "zumba-2a827.firebasestorage.app",
+          messagingSenderId: "325248310095",
+          appId: "1:325248310095:web:2673845967b7bc60f6833a"
         };
         
-        // COLE O UID DO SEU USUÁRIO ADMIN AQUI
-        // (Encontre em Firebase Console > Authentication > Users > User UID)
-        const ADMIN_UID = "5a3Wp2mG3rPPSgfr2rOtpCZURrl2"; 
+        // ==================================================================
+        // !! AÇÃO OBRIGATÓRIA !!
+        // ==================================================================
+        //
+        // 1. Vá ao painel do seu projeto Firebase 'zumba-2a827'
+        // 2. Vá para 'Authentication' -> 'Users'.
+        // 3. Crie um usuário (ou use um existente) para ser o Administrador.
+        // 4. Copie o 'User UID' desse usuário.
+        // 5. COLE O UID AQUI:
+        //
+        const ADMIN_UID = "mNenvFEpf1SnDCY2kXLUaDlgtP03"; 
+        // 
+        // ==================================================================
         
-        // NOVO NOME DA COLEÇÃO DE INSCRIÇÕES
+        // Nome da coleção de inscrições
         const INSCRICOES_COLLECTION = "inscricoes_zumba";
         
         // ==================================================================
@@ -766,6 +776,11 @@
         // Inicialização do Firebase
         let app, auth, db, storage;
         try {
+            // VERIFICAÇÃO DO ADMIN_UID
+            if (ADMIN_UID === "COLE_SEU_ADMIN_UID_AQUI" || ADMIN_UID.trim() === "") {
+                throw new Error("O 'ADMIN_UID' não foi definido. Edite o arquivo index.html na linha 938.");
+            }
+            
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
@@ -776,8 +791,8 @@
             console.error("Erro ao inicializar o Firebase:", error);
             document.body.innerHTML = `<div class="p-8 text-center text-red-600 bg-red-100">
                 <h1 class="text-2xl font-bold">Erro de Configuração do Firebase</h1>
-                <p class="mt-2">Não foi possível conectar ao Firebase. Verifique se o objeto 'firebaseConfig' e o 'ADMIN_UID' estão corretos no arquivo HTML.</p>
-                <p class="mt-1 text-sm">Abra o console (F12) para mais detalhes.</p>
+                <p class="mt-2">Não foi possível conectar ao Firebase. Verifique se o objeto 'firebaseConfig' está correto e se o 'ADMIN_UID' foi preenchido no arquivo HTML (linha 938).</p>
+                <p class="mt-1 text-sm">Abra o console (F12) para mais detalhes. (Erro: ${error.message})</p>
                 </div>`;
         }
 
@@ -891,10 +906,8 @@
                     showView('admin-panel');
                     loadAdminPanelData();
                 } else {
-                    // É um usuário comum (que acabou de se cadastrar)
-                    console.log("Usuário comum logado:", user.uid);
-                    // Não temos painel para usuário comum, então mostramos msg de sucesso pós-cadastro
-                    // ou deslogamos. Por segurança, vamos deslogar.
+                    // É um usuário comum (deve ser deslogado)
+                    console.log("Usuário comum logado, deslogando:", user.uid);
                     signOut(auth);
                     showView('login-view');
                 }
@@ -934,7 +947,7 @@
         });
 
         // =================================================
-        // Lógica de Cadastro do Usuário
+        // Lógica de Cadastro do Usuário (Simplificada)
         // =================================================
 
         // Gerar campos de saúde
@@ -958,71 +971,39 @@
         });
 
 
-        // Envio do Formulário de Cadastro
+        // Envio do Formulário de Cadastro (SEM AUTENTICAÇÃO DE USUÁRIO)
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             setRegisterLoading(true);
             registerMessage.textContent = '';
 
-            const fotoFile = document.getElementById('uploadFoto').files[0];
-            const rgFile = document.getElementById('uploadRG').files[0];
-
-            // 1. Criar usuário temporário para obter um UID
-            const tempEmail = `user_${Date.now()}@zumba.com`;
-            const tempPassword = Math.random().toString(36).slice(-8);
-            
-            let userCredential;
-            try {
-                userCredential = await createUserWithEmailAndPassword(auth, tempEmail, tempPassword);
-                console.log("Usuário temporário criado:", userCredential.user.uid);
-            } catch (error) {
-                 console.error("Erro ao criar usuário temporário:", error);
-                setRegisterLoading(false);
-                registerMessage.textContent = 'Erro ao iniciar inscrição (Auth). Tente novamente.';
-                registerMessage.className = 'text-sm text-center text-red-500';
-                return;
-            }
-            
-            const userId = userCredential.user.uid;
-            let photoURL = null;
-            let rgURL = null;
+            // const fotoFile = document.getElementById('uploadFoto').files[0]; // Desabilitado
+            // const rgFile = document.getElementById('uploadRG').files[0]; // Desabilitado
             
             try {
-                // 2. Fazer Upload dos arquivos (IGNORADO/COMENTADO TEMPORARIAMENTE)
-                // O Storage não está configurado. O código abaixo é ignorado para
-                // evitar que ele trave/falhe no upload.
+                // O upload de arquivos (Storage) não está sendo feito,
+                // pois requer regras de segurança específicas e o código
+                // original também não estava completando essa etapa.
                 
                 /*
-                if (fotoFile) {
-                     console.log("Tentando fazer upload da foto...");
-                    const fotoRef = ref(storage, `user_photos/${userId}/${fotoFile.name}`);
-                    await uploadBytes(fotoRef, fotoFile);
-                    photoURL = await getDownloadURL(fotoRef);
-                } else {
-                     console.log("Nenhuma foto fornecida. Pulando upload.");
-                }
-
-                if (rgFile) {
-                    console.log("Tentando fazer upload do RG...");
-                    const rgRef = ref(storage, `user_docs/${userId}/${rgFile.name}`);
-                    await uploadBytes(rgRef, rgFile);
-                    rgURL = await getDownloadURL(rgRef);
-                } else {
-                    console.log("Nenhum RG fornecido. Pulando upload.");
-                }
+                let photoURL = null;
+                let rgURL = null;
+                if (fotoFile) { ... }
+                if (rgFile) { ... }
                 */
-                
-                // 3. Coletar dados do formulário
+
+                // 1. Coletar dados do formulário
                 const formData = getAllFormData('register-form');
-                formData.photoURL = photoURL; // null
-                formData.rgURL = rgURL;     // null
-                formData.userId = userId;
+                formData.photoURL = null; // Upload desabilitado
+                formData.rgURL = null;    // Upload desabilitado
+                formData.userId = null;   // Inscrição anônima
                 formData.status = 'pending';
-                formData.email = tempEmail;
+                formData.email = null;    // Inscrição anônima
                 formData.createdAt = new Date().toISOString();
 
-                // 4. Salvar no Firestore
-                console.log("Tentando salvar no Firestore na coleção:", INSCRICOES_COLLECTION);
+                // 2. Salvar no Firestore
+                // (As novas regras de segurança permitirão esta escrita)
+                console.log("Tentando salvar no Firestore (anônimo) na coleção:", INSCRICOES_COLLECTION);
                 const docRef = await addDoc(collection(db, INSCRICOES_COLLECTION), formData);
                 
                 console.log("Inscrição enviada com ID:", docRef.id);
@@ -1031,9 +1012,10 @@
                 registerMessage.className = 'text-sm text-center text-green-600';
                 registerForm.reset();
                 
-                // Deslogar o usuário temporário
-                await signOut(auth);
-                showView('login-view'); // Voltar para o login
+                // Mostrar mensagem e voltar para o login
+                setTimeout(() => {
+                    showView('login-view'); 
+                }, 3000); // Espera 3 segundos para o usuário ler a msg
 
             } catch (error) {
                 console.error("Erro ao enviar inscrição:", error);
@@ -1041,18 +1023,11 @@
 
                 // Diagnóstico para o problema de permissão no Firestore
                 if (error.code && error.code.includes('permission-denied')) {
-                     registerMessage.textContent = `Erro de Permissão (Firestore). Verifique as Regras de Segurança do Firebase para a coleção "${INSCRICOES_COLLECTION}" (allow create: if true;).`;
+                     registerMessage.textContent = `Erro de Permissão (Firestore). Verifique se você aplicou as novas Regras de Segurança do Firebase para a coleção "${INSCRICOES_COLLECTION}" (allow create: if true;).`;
                 } else {
                     registerMessage.textContent = `Erro ao enviar inscrição: ${error.message}`;
                 }
                 registerMessage.className = 'text-sm text-center text-red-500';
-                
-                // Se deu erro, podemos tentar deletar o usuário temporário
-                try {
-                    await userCredential.user.delete();
-                } catch (deleteError) {
-                    console.error("Erro ao deletar usuário temporário após falha:", deleteError);
-                }
             }
         });
         
@@ -1145,7 +1120,7 @@
                 renderAdminLists();
             }, (error) => {
                 console.error("Erro ao carregar inscrições: Permissão de Leitura (READ) negada.", error);
-                pendingList.innerHTML = `<p class="text-red-500 font-bold">Erro ao carregar dados. Verifique as Regras de Segurança do Firebase para a permissão de leitura (READ) do administrador na coleção "${INSCRICOES_COLLECTION}".</p>`;
+                pendingList.innerHTML = `<p class="text-red-500 font-bold">Erro ao carregar dados. Verifique as Regras de Segurança do Firebase para a permissão de leitura (READ) do administrador (request.auth != null) na coleção "${INSCRICOES_COLLECTION}".</p>`;
             });
         }
 
@@ -1176,7 +1151,7 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm border">
                         <div>
                             <p class="font-bold text-lg">${data.nome || 'Nome não informado'}</p>
-                            <p class="text-sm text-gray-600">${data.email || data.cpf || 'Sem identificador'}</p>
+                            <p class="text-sm text-gray-600">${data.cpf || data.rg || 'Sem documento'}</p>
                             <p class="text-xs text-gray-500">Enviado em: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}</p>
                         </div>
                         <div class="flex gap-2">
@@ -1227,45 +1202,45 @@
                 modal.querySelector('.transform').appendChild(p);
                 setTimeout(() => p.remove(), 3000);
             };
+            
+            // (Substituindo window.confirm por um modal customizado se necessário)
+            // Usando window.confirm por simplicidade, já que o original usava
+            const customConfirm = (message) => {
+                 // Esta é uma implementação simples. O ideal seria um modal.
+                 return window.confirm(message);
+            }
 
             // Aprovar
             if (target.classList.contains('approve-btn')) {
-                // Substituir confirm()
-                if (window.confirm('Tem certeza que deseja APROVAR esta inscrição?')) {
+                if (customConfirm('Tem certeza que deseja APROVAR esta inscrição?')) {
                     try {
                         const docRef = doc(db, INSCRICOES_COLLECTION, docId);
                         await updateDoc(docRef, { status: "approved" });
                         console.log("Inscrição aprovada:", docId);
-                        showMessage("Inscrição APROVADA.");
+                        // showMessage("Inscrição APROVADA."); // Msg no modal não é útil se o modal não estiver aberto
                     } catch (error) {
                         console.error("Erro ao aprovar:", error);
-                        showMessage("Erro ao aprovar.", true);
+                        // showMessage("Erro ao aprovar.", true);
                     }
                 }
             }
 
             // Rejeitar
             if (target.classList.contains('reject-btn')) {
-                 // Substituir confirm()
-                 if (window.confirm('Tem certeza que deseja REJEITAR esta inscrição? Isso irá remover os arquivos associados (se existirem)!')) {
+                 if (customConfirm('Tem certeza que deseja REJEITAR esta inscrição?')) {
                     try {
                         const docRef = doc(db, INSCRICOES_COLLECTION, docId);
-                        const snap = await getDoc(docRef);
-                        const data = snap.data() || {};
+                        // const snap = await getDoc(docRef); // Não é mais necessário para deletar storage
+                        // const data = snap.data() || {};
                         await updateDoc(docRef, { status: "rejected" });
-                        // Remover arquivos associados (Se existirem)
-                        // Lógica de Storage removida temporariamente (ver linha 975)
-                        if (data.photoURL) { console.warn('Tentativa de deletar foto. Storage desabilitado.'); } 
-                        if (data.rgURL) { console.warn('Tentativa de deletar RG. Storage desabilitado.'); }
                         
-                        // if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
-                        // if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
+                        // Lógica de Storage removida - não há arquivos para deletar
                         
                         console.log("Inscrição rejeitada:", docId);
-                        showMessage("Inscrição REJEITADA.", true);
+                        // showMessage("Inscrição REJEITADA.", true);
                     } catch (error) {
                         console.error("Erro ao rejeitar:", error);
-                        showMessage("Erro ao rejeitar.", true);
+                        // showMessage("Erro ao rejeitar.", true);
                     }
                 }
             }
@@ -1292,8 +1267,8 @@
 
                 if (!docSnap.exists()) {
                     console.error("Documento não encontrado");
-                    // Substituir alert()
-                    window.alert("Documento não encontrado.");
+                    // Substituir alert() por um método não bloqueante
+                    modalMessage.textContent = "Erro: Documento não encontrado.";
                     return;
                 }
 
@@ -1363,8 +1338,7 @@
 
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
-                // Substituir alert()
-                window.alert("Erro ao carregar dados para edição.");
+                modalMessage.textContent = "Erro ao carregar dados para edição.";
             }
         }
 
@@ -1411,8 +1385,7 @@
         modalDeleteBtn.addEventListener('click', async () => {
             if (!currentEditingDocId) return;
             
-            // Substituir confirm()
-            if (!window.confirm('TEM CERTEZA? Esta ação é irreversível e irá deletar o cadastro permanentemente e seus arquivos.')) {
+            if (!window.confirm('TEM CERTEZA? Esta ação é irreversível e irá deletar o cadastro permanentemente.')) {
                 return;
             }
             
@@ -1420,16 +1393,8 @@
             
             try {
                 const docRef = doc(db, INSCRICOES_COLLECTION, currentEditingDocId);
-                const snap = await getDoc(docRef);
-                const data = snap.data() || {};
                 
-                // Tenta deletar arquivos antes de deletar o documento
-                // Lógica de Storage removida temporariamente (ver linha 975)
-                if (data.photoURL) { console.warn('Tentativa de deletar foto. Storage desabilitado.'); } 
-                if (data.rgURL) { console.warn('Tentativa de deletar RG. Storage desabilitado.'); }
-                
-                // if (data.photoURL) { try { await deleteObject(ref(storage, data.photoURL)); } catch (e) { console.warn('Falha ao deletar foto:', e?.message); } }
-                // if (data.rgURL) { try { await deleteObject(ref(storage, data.rgURL)); } catch (e) { console.warn('Falha ao deletar RG:', e?.message); } }
+                // Lógica de Storage removida
                 
                 await deleteDoc(docRef);
                 
@@ -1458,7 +1423,8 @@
 
             if (selectedFields.length === 0) {
                 // Substituir alert()
-                window.alert("Por favor, selecione pelo menos um campo para o relatório.");
+                // window.alert("Por favor, selecione pelo menos um campo para o relatório.");
+                console.warn("Nenhum campo selecionado para o relatório.");
                 return;
             }
 
@@ -1528,7 +1494,7 @@
         
         // Exportar para CSV
         exportCsvBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) { console.warn('Gere o relatório antes de exportar.'); return; }
             const table = document.getElementById('report-table');
             let csv = [];
             
@@ -1557,7 +1523,7 @@
 
         // Exportar para XLSX
         exportXlsxBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) { console.warn('Gere o relatório antes de exportar.'); return; }
             const aoa = [ lastReportData.headers, ...lastReportData.rows ];
             const ws = XLSX.utils.aoa_to_sheet(aoa);
             const wb = XLSX.utils.book_new();
@@ -1567,7 +1533,7 @@
 
         // Exportar para PDF
         exportPdfBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) { console.warn('Gere o relatório antes de exportar.'); return; }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
             const title = 'Relatório Projeto Zumba';
