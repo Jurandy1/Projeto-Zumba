@@ -445,6 +445,8 @@
                 </button>
             </header>
 
+            <div id="admin-stats" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+
             <!-- Seção: Inscrições Pendentes -->
             <div class="p-6 bg-white rounded-lg shadow-lg">
                 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between pb-4 border-b border-gray-200">
@@ -507,12 +509,18 @@
                             <label class="form-label" for="report-city-filter">Cidade</label>
                             <input type="text" id="report-city-filter" class="form-input" placeholder="Filtrar por cidade">
                         </div>
+                        <div>
+                            <label class="form-label" for="report-uf-filter">UF</label>
+                            <input type="text" id="report-uf-filter" class="form-input" placeholder="Filtrar por UF" maxlength="2">
+                        </div>
                     </div>
                     
                     <!-- Checkboxes dos Campos -->
                     <div id="report-fields" class="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
                         <!-- Campos para o relatório -->
                         <label class="flex items-center"><input type="checkbox" value="nome" class="mr-2 rounded text-pink-500"> Nome</label>
+                        <label class="flex items-center"><input type="checkbox" value="status" class="mr-2 rounded text-pink-500"> Status</label>
+                        <label class="flex items-center"><input type="checkbox" value="createdAt" class="mr-2 rounded text-pink-500"> Data de criação</label>
                         <label class="flex items-center"><input type="checkbox" value="idade" class="mr-2 rounded text-pink-500"> Idade</label>
                         <label class="flex items-center"><input type="checkbox" value="telefone" class="mr-2 rounded text-pink-500"> Telefone</label>
                         <label class="flex items-center"><input type="checkbox" value="tipoSanguineo" class="mr-2 rounded text-pink-500"> Tipo Sanguíneo</label>
@@ -841,6 +849,8 @@
         const dateStartInput = document.getElementById('report-date-start');
         const dateEndInput = document.getElementById('report-date-end');
         const cityFilterInput = document.getElementById('report-city-filter');
+        const adminStats = document.getElementById('admin-stats');
+        const ufFilterInput = document.getElementById('report-uf-filter');
         var lastReportData = { headers: [], rows: [] }; // Usando 'var'
 
         // =================================================
@@ -1204,6 +1214,28 @@
             });
         }
 
+        function toDate(val) {
+            try {
+                if (!val) return null;
+                if (typeof val === 'string' || typeof val === 'number') {
+                    const d = new Date(val);
+                    return isNaN(d.getTime()) ? null : d;
+                }
+                if (typeof val === 'object') {
+                    if (typeof val.toDate === 'function') {
+                        const d = val.toDate();
+                        return d instanceof Date ? d : null;
+                    }
+                    if ('seconds' in val && 'nanoseconds' in val) {
+                        return new Date(val.seconds * 1000 + Math.floor(val.nanoseconds / 1e6));
+                    }
+                }
+                return null;
+            } catch(e) {
+                return null;
+            }
+        }
+
         function renderAdminLists() {
             const q = (adminSearchInput?.value || '').toLowerCase().trim();
             const sort = adminSortSelect?.value || 'date_desc';
@@ -1221,8 +1253,8 @@
             const sorted = allRegistrations.slice().sort((a,b) => {
                 if (sort === 'name_asc') return (a.nome||'').localeCompare(b.nome||'');
                 if (sort === 'name_desc') return (b.nome||'').localeCompare(a.nome||'');
-                const ad = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-                const bd = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                const ad = toDate(a.createdAt)?.getTime() || 0;
+                const bd = toDate(b.createdAt)?.getTime() || 0;
                 return sort === 'date_asc' ? ad - bd : bd - ad;
             });
 
@@ -1246,7 +1278,7 @@
                         <div>
                             <p class="font-bold text-lg">${data.nome || 'Nome não informado'}</p>
                             <p class="text-sm text-gray-600">${data.email || data.cpf || 'Sem identificador'}</p>
-                            <p class="text-xs text-gray-500">Enviado em: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}</p>
+                    <p class="text-xs text-gray-500">Enviado em: ${(()=>{const d=toDate(data.createdAt);return d? d.toLocaleDateString('pt-BR'): 'N/A';})()}</p>
                         </div>
                         <div class="flex gap-2">
                             <button data-id="${id}" class="view-btn btn-zumba-secondary text-sm !px-3 !py-1">Ver/Editar</button>
@@ -1266,7 +1298,7 @@
                                 <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${statusClass}">${statusText}</span>
                             </div>
                             <p class="text-sm text-gray-600">${data.cpf || data.rg || 'Sem documento'}</p>
-                            <p class="text-xs text-gray-500">Enviado em: ${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'N/A'}</p>
+                            <p class="text-xs text-gray-500">Enviado em: ${(()=>{const d=toDate(data.createdAt);return d? d.toLocaleDateString('pt-BR'): 'N/A';})()}</p>
                         </div>
                         <div class="flex gap-2">
                             <button data-id="${id}" class="view-btn btn-zumba-secondary text-sm !px-3 !py-1">Ver/Editar</button>
@@ -1306,6 +1338,39 @@
             } else {
                 allParticipantsList.innerHTML = '';
                 noParticipantsMsg.classList.remove('hidden-section');
+            }
+
+            if (adminStats) {
+                const total = allRegistrations.length;
+                const approved = allRegistrations.filter(x=>x.status==='approved').length;
+                const pendingCount = allRegistrations.filter(x=>x.status!=='approved' && x.status!=='rejected').length;
+                const rejectedCount = allRegistrations.filter(x=>x.status==='rejected').length;
+                adminStats.innerHTML = `
+                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border">
+                        <div>
+                            <p class="text-sm text-gray-500">Total</p>
+                            <p class="text-2xl font-bold">${total}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border">
+                        <div>
+                            <p class="text-sm text-gray-500">Aprovados</p>
+                            <p class="text-2xl font-bold text-green-600">${approved}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border">
+                        <div>
+                            <p class="text-sm text-gray-500">Pendentes</p>
+                            <p class="text-2xl font-bold text-yellow-600">${pendingCount}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border">
+                        <div>
+                            <p class="text-sm text-gray-500">Rejeitados</p>
+                            <p class="text-2xl font-bold text-red-600">${rejectedCount}</p>
+                        </div>
+                    </div>
+                `;
             }
         }
 
@@ -1561,6 +1626,7 @@
             const startDateStr = dateStartInput.value;
             const endDateStr = dateEndInput.value;
             const cityFilter = (cityFilterInput.value || '').trim().toLowerCase();
+            const ufFilter = (ufFilterInput?.value || '').trim().toUpperCase();
 
             var filteredUsers = allRegistrations.slice(); // Usando 'var'
             if (status !== 'all') {
@@ -1568,16 +1634,19 @@
             }
             if (startDateStr) {
                 const start = new Date(startDateStr);
-                filteredUsers = filteredUsers.filter(u => u.createdAt ? new Date(u.createdAt) >= start : false);
+                filteredUsers = filteredUsers.filter(u => { const d = toDate(u.createdAt); return d ? d >= start : false; });
             }
             if (endDateStr) {
                 const end = new Date(endDateStr);
                 // incluir dia inteiro
                 end.setHours(23,59,59,999);
-                filteredUsers = filteredUsers.filter(u => u.createdAt ? new Date(u.createdAt) <= end : false);
+                filteredUsers = filteredUsers.filter(u => { const d = toDate(u.createdAt); return d ? d <= end : false; });
             }
             if (cityFilter) {
                 filteredUsers = filteredUsers.filter(u => (u.cidade || '').toLowerCase().includes(cityFilter));
+            }
+            if (ufFilter) {
+                filteredUsers = filteredUsers.filter(u => (u.uf || '').toUpperCase() === ufFilter);
             }
 
             if (filteredUsers.length === 0) {
@@ -1603,7 +1672,7 @@
                 bodyHtml += '<tr>';
                 var row = []; // Array para exportação. Usando 'var'
                 selectedFields.forEach(field => {
-                    const value = user[field] || 'N/A';
+                    const value = field === 'createdAt' ? (toDate(user.createdAt)?.toLocaleString('pt-BR') || 'N/A') : (user[field] || 'N/A');
                     bodyHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${value}</td>`;
                     row.push(value);
                 });
