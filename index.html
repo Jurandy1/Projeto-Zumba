@@ -191,7 +191,7 @@
                             </div>
                             <div>
                                 <label for="data" class="form-label">Data</label>
-                                <input type="date" id="data" class="form-input" required>
+                                <input type="date" id="data" class="form-input bg-gray-100" required readonly>
                             </div>
                         </div>
                     </fieldset>
@@ -241,18 +241,22 @@
                                 <input type="text" id="bairro" class="form-input">
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-4">
                             <div>
                                 <label for="cep" class="form-label">CEP</label>
-                                <input type="text" id="cep" class="form-input">
+                                <input type="text" id="cep" class="form-input" placeholder="00000-000">
                             </div>
                             <div>
                                 <label for="cidade" class="form-label">Cidade</label>
                                 <input type="text" id="cidade" class="form-input">
                             </div>
                             <div>
+                                <label for="uf" class="form-label">UF</label>
+                                <input type="text" id="uf" class="form-input" maxlength="2" placeholder="EX">
+                            </div>
+                            <div>
                                 <label for="telefone" class="form-label">Telefone</label>
-                                <input type="tel" id="telefone" class="form-input">
+                                <input type="tel" id="telefone" class="form-input" placeholder="(00) 00000-0000">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
@@ -279,7 +283,7 @@
                             </div>
                             <div>
                                 <label for="cpf" class="form-label">CPF</label>
-                                <input type="text" id="cpf" class="form-input" required>
+                                <input type="text" id="cpf" class="form-input" required placeholder="000.000.000-00">
                             </div>
                             <div>
                                 <label for="titulo" class="form-label">Título</label>
@@ -516,6 +520,7 @@
                         <label class="flex items-center"><input type="checkbox" value="sexo" class="mr-2 rounded text-pink-500"> Sexo</label>
                         <label class="flex items-center"><input type="checkbox" value="bairro" class="mr-2 rounded text-pink-500"> Bairro</label>
                         <label class="flex items-center"><input type="checkbox" value="cidade" class="mr-2 rounded text-pink-500"> Cidade</label>
+                        <label class="flex items-center"><input type="checkbox" value="uf" class="mr-2 rounded text-pink-500"> UF</label>
                         <label class="flex items-center"><input type="checkbox" value="camisa" class="mr-2 rounded text-pink-500"> Tam. Camisa</label>
                         <label class="flex items-center"><input type="checkbox" value="hipertenso" class="mr-2 rounded text-pink-500"> Hipertenso</label>
                         <label class="flex items-center"><input type="checkbox" value="diabetico" class="mr-2 rounded text-pink-500"> Diabético</label>
@@ -626,10 +631,11 @@
                                 <div><label for="edit-numero" class="form-label">N°</label><input type="text" id="edit-numero" class="form-input"></div>
                                 <div><label for="edit-bairro" class="form-label">Bairro</label><input type="text" id="edit-bairro" class="form-input"></div>
                             </div>
-                            <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
-                                <div><label for="edit-cep" class="form-label">CEP</label><input type="text" id="edit-cep" class="form-input"></div>
+                            <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-4">
+                                <div><label for="edit-cep" class="form-label">CEP</label><input type="text" id="edit-cep" class="form-input" placeholder="00000-000"></div>
                                 <div><label for="edit-cidade" class="form-label">Cidade</label><input type="text" id="edit-cidade" class="form-input"></div>
-                                <div><label for="edit-telefone" class="form-label">Telefone</label><input type="tel" id="edit-telefone" class="form-input"></div>
+                                <div><label for="edit-uf" class="form-label">UF</label><input type="text" id="edit-uf" class="form-input" maxlength="2" placeholder="EX"></div>
+                                <div><label for="edit-telefone" class="form-label">Telefone</label><input type="tel" id="edit-telefone" class="form-input" placeholder="(00) 00000-0000"></div>
                             </div>
                             <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
                                 <div><label for="edit-profissao" class="form-label">Profissão</label><input type="text" id="edit-profissao" class="form-input"></div>
@@ -638,7 +644,7 @@
                             </div>
                             <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-4">
                                 <div><label for="edit-rg" class="form-label">RG</label><input type="text" id="edit-rg" class="form-input"></div>
-                                <div><label for="edit-cpf" class="form-label">CPF</label><input type="text" id="edit-cpf" class="form-input"></div>
+                                <div><label for="edit-cpf" class="form-label">CPF</label><input type="text" id="edit-cpf" class="form-input" placeholder="000.000.000-00"></div>
                                 <div><label for="edit-titulo" class="form-label">Título</label><input type="text" id="edit-titulo" class="form-input"></div>
                                 <div><label for="edit-secao" class="form-label">Seção</label><input type="text" id="edit-secao" class="form-input"></div>
                             </div>
@@ -778,7 +784,7 @@
             auth = getAuth(app);
             db = getFirestore(app);
             // storage = getStorage(app); // Inicialização 'storage' removida
-            setLogLevel('Debug'); // Para ver logs no console
+            setLogLevel('debug');
             console.log("Firebase inicializado com sucesso.");
         } catch (error) {
             console.error("Erro ao inicializar o Firebase:", error);
@@ -850,6 +856,11 @@
             // Se for para a tela de registro, gera o número de inscrição
             if (viewId === 'register-view') {
                  generateInscricaoNumber();
+                 setTodayDate();
+                 setupCepAutoFill('cep', { endereco: 'endereco', bairro: 'bairro', cidade: 'cidade', uf: 'uf' });
+                 var cpfEl = document.getElementById('cpf'); if (cpfEl) cpfEl.addEventListener('input', function(){ this.value = formatCpf(this.value); });
+                 var telEl = document.getElementById('telefone'); if (telEl) telEl.addEventListener('input', function(){ this.value = formatPhone(this.value); });
+                 var ufEl = document.getElementById('uf'); if (ufEl) ufEl.addEventListener('input', function(){ this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0,2); });
             }
         };
 
@@ -861,6 +872,82 @@
             const day = String(date.getDate()).padStart(2, '0');
             const random = Math.floor(100 + Math.random() * 900); // Número de 3 dígitos
             inscricaoInput.value = `Z${year}${month}${day}-${random}`;
+        }
+
+        function setTodayDate() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            document.getElementById('data').value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        function formatCep(v) {
+            return v.replace(/\D/g, '').slice(0, 8).replace(/(\d{5})(\d)/, '$1-$2');
+        }
+
+        function formatCpf(v) {
+            return v.replace(/\D/g, '').slice(0, 11)
+                     .replace(/(\d{3})(\d)/, '$1.$2')
+                     .replace(/(\d{3})(\d)/, '$1.$2')
+                     .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
+
+        function formatPhone(v) {
+            var digits = v.replace(/\D/g, '').slice(0, 11);
+            if (digits.length <= 10) {
+                return digits.replace(/(\d{0,2})(\d{0,4})(\d{0,4})/, function(_, a, b, c){
+                    var p1 = a ? `(${a}` : '';
+                    var p2 = b ? `) ${b}` : (a ? ')' : '');
+                    var p3 = c ? `-${c}` : '';
+                    return `${p1}${p2}${p3}`;
+                });
+            } else {
+                return digits.replace(/(\d{0,2})(\d{0,5})(\d{0,4})/, function(_, a, b, c){
+                    var p1 = a ? `(${a}` : '';
+                    var p2 = b ? `) ${b}` : (a ? ')' : '');
+                    var p3 = c ? `-${c}` : '';
+                    return `${p1}${p2}${p3}`;
+                });
+            }
+        }
+
+        function setupCepAutoFill(cepInputId, map) {
+            var cepInput = document.getElementById(cepInputId);
+            if (!cepInput) return;
+            function lookup() {
+                var cep = cepInput.value.replace(/\D/g, '');
+                if (cep.length !== 8) return;
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(function(r){ return r.json(); })
+                    .then(function(data){
+                        if (data && !data.erro) {
+                            if (map.endereco) { var el = document.getElementById(map.endereco); if (el) el.value = data.logradouro || ''; }
+                            if (map.bairro) { var el2 = document.getElementById(map.bairro); if (el2) el2.value = data.bairro || ''; }
+                            if (map.cidade) { var el3 = document.getElementById(map.cidade); if (el3) el3.value = data.localidade || ''; }
+                            if (map.uf) { var el4 = document.getElementById(map.uf); if (el4) el4.value = data.uf || ''; }
+                        }
+                    })
+                    .catch(function(){});
+            }
+            cepInput.addEventListener('blur', lookup);
+            cepInput.addEventListener('input', function(){ this.value = formatCep(this.value); });
+        }
+
+        function calculateAgeFor(birthInputId, ageInputId) {
+            const birthDateStr = document.getElementById(birthInputId).value;
+            const ageEl = document.getElementById(ageInputId);
+            if (!ageEl) return;
+            if (birthDateStr) {
+                const today = new Date();
+                const birthDate = new Date(birthDateStr);
+                var age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
+                ageEl.value = age;
+            } else {
+                ageEl.value = '';
+            }
         }
 
         // Cálculo automático da Idade
@@ -883,6 +970,8 @@
         
         // Listener para calcular idade
         dataNascimentoInput.addEventListener('change', calculateAge);
+        const editBirthEl = document.getElementById('edit-dataNascimento');
+        if (editBirthEl) editBirthEl.addEventListener('change', function(){ calculateAgeFor('edit-dataNascimento','edit-idade'); });
 
 
         goToRegisterBtn.addEventListener('click', () => showView('register-view'));
@@ -913,6 +1002,10 @@
                 showView('login-view');
             }
         });
+        setupCepAutoFill('edit-cep', { endereco: 'edit-endereco', bairro: 'edit-bairro', cidade: 'edit-cidade', uf: 'edit-uf' });
+        var cpfEditEl = document.getElementById('edit-cpf'); if (cpfEditEl) cpfEditEl.addEventListener('input', function(){ this.value = formatCpf(this.value); });
+        var telEditEl = document.getElementById('edit-telefone'); if (telEditEl) telEditEl.addEventListener('input', function(){ this.value = formatPhone(this.value); });
+        var ufEditEl = document.getElementById('edit-uf'); if (ufEditEl) ufEditEl.addEventListener('input', function(){ this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0,2); });
 
         // Login do Admin
         adminLoginForm.addEventListener('submit', async (e) => {
@@ -1342,7 +1435,7 @@
                 
                 // Preencher campos Sim/Não com "Qual"
                  ['alergias', 'cirurgiaRecente', 'tratamentoMedico', 'tomaMedicamento', 'problemaOrtopedico'].forEach(key => {
-                     const elSelect = document.getElementById(`edit-${key}`);
+                      const elSelect = document.getElementById(`edit-${key}`);
                      const elQual = document.getElementById(`edit-${key}Qual`);
                      const value = data[key] || "Não";
                      
@@ -1359,6 +1452,8 @@
                          elQual.value = '';
                      }
                  });
+
+                calculateAgeFor('edit-dataNascimento','edit-idade');
 
 
                 // Mostrar o modal (Ajustado para display:none/flex)
