@@ -40,6 +40,10 @@
         .btn-danger:hover { background-color: #dc2626; }
         .btn-success { background-color: #10b981; color: white; } 
         .btn-success:hover { background-color: #059669; }
+        
+        /* Botão WhatsApp */
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        .btn-whatsapp:hover { background-color: #128C7E; }
 
         /* Inputs */
         .form-input, .form-select { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; transition: border-color 0.15s ease-in-out; }
@@ -95,18 +99,23 @@
         <section id="register-view" class="hidden-section flex-grow bg-gray-50 py-8 px-4">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
                 <div class="p-6 bg-white border-b border-gray-100 flex justify-between items-center">
-                    <div><h1 class="text-2xl font-bold text-gray-800">Ficha de Inscrição</h1><p class="text-gray-500 text-sm">Preencha todos os campos obrigatórios</p></div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800" id="form-title">Ficha de Inscrição</h1>
+                        <p class="text-gray-500 text-sm" id="form-subtitle">Preencha todos os campos obrigatórios</p>
+                    </div>
                     <button id="back-to-login-btn" class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar</button>
                 </div>
 
                 <form id="register-form" class="p-6 space-y-8">
+                    <!-- Campo oculto para ID de edição -->
+                    <input type="hidden" id="editing-id" value="">
+
                     <!-- Identificação -->
                     <div class="space-y-4">
                         <h3 class="text-lg font-semibold text-pink-600 flex items-center gap-2"><i data-lucide="clipboard-list" class="w-5 h-5"></i> Identificação</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div id="polo-container">
                                 <label for="polo" class="form-label">Polo</label>
-                                <!-- Padrão: Input Texto (Substituído por Select se houver config) -->
                                 <input type="text" id="polo" class="form-input" placeholder="Digite seu Polo">
                             </div>
                             <div>
@@ -303,6 +312,21 @@
                                 <label class="flex items-center gap-2"><input type="checkbox" value="status" class="text-pink-600 rounded"> Status</label>
                                 <label class="flex items-center gap-2"><input type="checkbox" value="cpf" class="text-pink-600 rounded"> CPF</label>
                                 <label class="flex items-center gap-2"><input type="checkbox" value="inscricao" class="text-pink-600 rounded"> N° Insc.</label>
+                                
+                                <!-- NOVOS CAMPOS PARA RELATÓRIO -->
+                                <label class="flex items-center gap-2"><input type="checkbox" value="zona" class="text-pink-600 rounded"> Zona Eleitoral</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="tipoSanguineo" class="text-pink-600 rounded"> Tipo Sang.</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="alergias" class="text-pink-600 rounded"> Alergias</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="cirurgiaRecente" class="text-pink-600 rounded"> Cirurgia</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="tratamentoMedico" class="text-pink-600 rounded"> Tratamento</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="tomaMedicamento" class="text-pink-600 rounded"> Medicamento</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="problemaOrtopedico" class="text-pink-600 rounded"> Prob. Ortop.</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="bebidaAlcoolica" class="text-pink-600 rounded"> Bebida</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="fumante" class="text-pink-600 rounded"> Fumante</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="doadorSangue" class="text-pink-600 rounded"> Doador</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="cardiaco" class="text-pink-600 rounded"> Cardíaco</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="hipertenso" class="text-pink-600 rounded"> Hipertenso</label>
+                                <label class="flex items-center gap-2"><input type="checkbox" value="diabetico" class="text-pink-600 rounded"> Diabético</label>
                             </div>
                         </div>
                         <div class="flex gap-3"><button id="generate-report-btn" class="btn btn-primary"><i data-lucide="search" class="w-4 h-4 mr-2"></i> Gerar Resultado</button><button id="clear-filters-btn" class="btn btn-secondary">Limpar</button></div>
@@ -437,22 +461,25 @@
             });
         });
 
-        // Alternar Telas
-        const showView = (viewName) => {
+        // Alternar Telas e Lógica de Link de Edição
+        const showView = async (viewName) => {
             Object.values(views).forEach(el => el.classList.add('hidden-section'));
             views[viewName].classList.remove('hidden-section');
             
-            // Tenta logar anonimamente se for a tela de cadastro
+            // Lógica de Registro (Create or Edit)
             if(viewName === 'register') {
+                // Checar se é edição via URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const editId = urlParams.get('edit_id');
+                
                 if (!auth.currentUser) {
-                    signInAnonymously(auth)
-                        .then(() => initRegisterForm())
-                        .catch(e => {
-                            console.warn("Login Anônimo falhou ou está desativado. Tentando carregar formulário mesmo assim...", e);
-                            initRegisterForm(); // Carrega mesmo sem auth
-                        });
+                    signInAnonymously(auth).catch(e => console.warn("Modo offline/sem auth", e));
+                }
+                
+                if (editId) {
+                    await loadDataForEdit(editId);
                 } else {
-                    initRegisterForm();
+                    initRegisterForm(); // Modo Criar
                 }
             }
             if(window.lucide) lucide.createIcons();
@@ -460,22 +487,26 @@
 
         // Monitorar Estado de Login
         onAuthStateChanged(auth, (user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isEditing = urlParams.has('edit_id');
+
             if (user) {
-                if (user.uid === ADMIN_UID) {
+                if (user.uid === ADMIN_UID && !isEditing) {
                     showView('admin');
                     initAdminPanel();
-                } else if (!user.isAnonymous) {
+                } else if (!user.isAnonymous && !isEditing) {
                     // Usuário logado mas não é admin e não é anônimo
                     signOut(auth);
                     showView('login');
+                } else if (isEditing) {
+                    showView('register');
                 }
-                // Se for anônimo, permanece onde está (cadastro)
             } else {
-                // Se não estiver na tela de registro, manda pro login
-                if (!document.getElementById('register-view').classList.contains('hidden-section')) {
-                     // Fica no registro
-                } else {
+                // Se não estiver na tela de registro (ou editando), manda pro login
+                if (document.getElementById('register-view').classList.contains('hidden-section') && !isEditing) {
                      showView('login');
+                } else {
+                     showView('register');
                 }
             }
         });
@@ -495,13 +526,17 @@
 
         // Logout
         document.getElementById('admin-logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => window.location.reload());
+            signOut(auth).then(() => {
+                window.history.replaceState({}, document.title, window.location.pathname); // Limpa URL
+                window.location.reload();
+            });
         });
 
         // Botões de Navegação
         document.getElementById('go-to-register-btn').addEventListener('click', () => showView('register'));
         document.getElementById('back-to-login-btn').addEventListener('click', () => {
              if(auth.currentUser?.isAnonymous) signOut(auth);
+             window.history.replaceState({}, document.title, window.location.pathname); // Limpa URL de edit_id
              showView('login');
         });
 
@@ -538,20 +573,84 @@
         }
 
         // ===========================================
-        // LÓGICA DE CADASTRO (Register)
+        // LÓGICA DE CADASTRO (Register & Edit)
         // ===========================================
-        async function initRegisterForm() {
-            // Data de hoje
-            document.getElementById('data').value = new Date().toISOString().split('T')[0];
+        
+        // Carregar dados para edição
+        async function loadDataForEdit(id) {
+            document.getElementById('submit-loading').classList.remove('hidden-section');
+            document.getElementById('form-title').textContent = "Editando Inscrição";
+            document.getElementById('form-subtitle').textContent = "Atualize seus dados e salve novamente.";
+            document.getElementById('editing-id').value = id;
+            document.getElementById('submit-text').textContent = "Salvar Alterações";
             
-            // Tenta buscar contagem para o Nº de Inscrição
+            initRegisterForm(true); // Carrega listeners mas não reseta data
+
             try {
-                const snapshot = await getCountFromServer(collection(db, INSCRICOES_COLLECTION));
-                const nextId = String(snapshot.data().count + 1).padStart(3, '0');
-                document.getElementById('inscricao').value = nextId;
-            } catch (e) {
-                // Se falhar (erro permissão), usa padrão
-                document.getElementById('inscricao').value = "Automático";
+                const docSnap = await getDoc(doc(db, INSCRICOES_COLLECTION, id));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    // Preencher campos simples
+                    const form = document.getElementById('register-form');
+                    form.querySelectorAll('input:not([type=radio]), select').forEach(el => {
+                        if (data[el.id]) el.value = data[el.id];
+                    });
+                    
+                    // Preencher Radios
+                    if(data.sexo) {
+                        const r = form.querySelector(`input[name="sexo"][value="${data.sexo}"]`);
+                        if(r) r.checked = true;
+                    }
+                    if(data.camisa) {
+                        const r = form.querySelector(`input[name="camisa"][value="${data.camisa}"]`);
+                        if(r) r.checked = true;
+                        else {
+                            const out = form.querySelector(`input[name="camisa"][value="Outro"]`);
+                            if(out) out.checked = true;
+                            document.getElementById('camisaOutro').value = data.camisa;
+                        }
+                    }
+                    
+                    // Preencher Saúde "Qual?"
+                    ['alergias', 'cirurgiaRecente', 'tratamentoMedico', 'tomaMedicamento', 'problemaOrtopedico'].forEach(k => {
+                        const val = data[k] || "Não";
+                        if (val.startsWith('Sim')) {
+                            document.getElementById(k).value = 'Sim';
+                            const match = val.match(/\((.*?)\)/);
+                            if(match) document.getElementById(k+'Qual').value = match[1];
+                        } else {
+                            document.getElementById(k).value = 'Não';
+                        }
+                    });
+                    
+                    // Preencher Polo (se não foi pego no loop simples)
+                    if(data.polo) document.getElementById('polo').value = data.polo;
+
+                } else {
+                    alert("Inscrição não encontrada.");
+                    window.location.href = window.location.pathname; // Volta pro início
+                }
+            } catch(e) {
+                console.error("Erro ao carregar dados", e);
+                alert("Erro ao carregar dados. Tente recarregar.");
+            } finally {
+                document.getElementById('submit-loading').classList.add('hidden-section');
+            }
+        }
+
+        async function initRegisterForm(isEditing = false) {
+            if(!isEditing) {
+                document.getElementById('data').value = new Date().toISOString().split('T')[0];
+                document.getElementById('editing-id').value = "";
+                document.getElementById('form-title').textContent = "Ficha de Inscrição";
+                document.getElementById('submit-text').textContent = "Confirmar Inscrição";
+                
+                try {
+                    const snapshot = await getCountFromServer(collection(db, INSCRICOES_COLLECTION));
+                    const nextId = String(snapshot.data().count + 1).padStart(3, '0');
+                    document.getElementById('inscricao').value = nextId;
+                } catch (e) { document.getElementById('inscricao').value = "Automático"; }
             }
             
             // Tenta buscar Polos
@@ -561,8 +660,8 @@
                 
                 if (polosStr.trim().length > 0) {
                     const polos = polosStr.split(',').map(p => p.trim()).filter(p => p);
-                    // Substitui Input por Select
-                    const options = polos.map(p => `<option value="${p}">${p}</option>`).join('');
+                    const currentVal = document.getElementById('polo').value;
+                    const options = polos.map(p => `<option value="${p}" ${p===currentVal?'selected':''}>${p}</option>`).join('');
                     document.getElementById('polo-container').innerHTML = `
                         <label for="polo" class="form-label">Polo</label>
                         <select id="polo" class="form-select">
@@ -571,31 +670,16 @@
                         </select>
                     `;
                 }
-            } catch (e) {
-                // Se falhar, mantém o Input de texto original que já está no HTML
-            }
+            } catch (e) { }
 
-            // Ativa Listeners dos Inputs
+            // Listeners
             document.getElementById('cpf').oninput = (e) => e.target.value = maskCPF(e.target.value);
             document.getElementById('telefone').oninput = (e) => e.target.value = maskPhone(e.target.value);
-            document.getElementById('cep').oninput = (e) => {
-                e.target.value = maskCEP(e.target.value);
-                if(e.target.value.length === 9) fetchAddress(e.target.value);
-            };
-            document.getElementById('rg').onkeydown = (e) => {
-                // Apenas números
-                if (!/[0-9]/.test(e.key) && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-                    e.preventDefault();
-                }
-            };
-            document.getElementById('dataNascimento').onchange = function() {
-                if(this.value) {
-                    const diff = Date.now() - new Date(this.value).getTime();
-                    document.getElementById('idade').value = Math.abs(new Date(diff).getUTCFullYear() - 1970);
-                }
-            };
+            document.getElementById('cep').oninput = (e) => { e.target.value = maskCEP(e.target.value); if(e.target.value.length === 9) fetchAddress(e.target.value); };
+            document.getElementById('rg').onkeydown = (e) => { if (!/[0-9]/.test(e.key) && e.key.length === 1 && !e.ctrlKey) e.preventDefault(); };
+            document.getElementById('dataNascimento').onchange = function() { if(this.value) document.getElementById('idade').value = Math.abs(new Date(Date.now() - new Date(this.value).getTime()).getUTCFullYear() - 1970); };
             
-            // Renderiza perguntas de saúde (apenas se estiver vazio)
+            // Health Qs
             const hc = document.getElementById('health-questions-container');
             if(hc.children.length === 0) {
                 const qs = [
@@ -621,8 +705,8 @@
             e.preventDefault();
             const btn = document.getElementById('submit-register-btn');
             const msg = document.getElementById('register-message');
+            const editId = document.getElementById('editing-id').value;
             
-            // UI Loading
             btn.disabled = true;
             document.getElementById('submit-loading').classList.remove('hidden-section');
             document.getElementById('submit-text').classList.add('hidden-section');
@@ -631,70 +715,47 @@
                 const form = document.getElementById('register-form');
                 const data = {};
                 
-                // Coleta inputs normais
-                form.querySelectorAll('input:not([type=radio]), select').forEach(el => {
-                    if(el.id) data[el.id] = el.value;
-                });
+                form.querySelectorAll('input:not([type=radio]), select').forEach(el => { if(el.id) data[el.id] = el.value; });
+                const sex = form.querySelector('input[name="sexo"]:checked'); if(sex) data.sexo = sex.value;
+                const shirt = form.querySelector('input[name="camisa"]:checked'); if(shirt) data.camisa = shirt.value === 'Outro' ? (document.getElementById('camisaOutro').value || 'Outro') : shirt.value;
                 
-                // Coleta Radios
-                const sex = form.querySelector('input[name="sexo"]:checked');
-                if(sex) data.sexo = sex.value;
-                
-                const shirt = form.querySelector('input[name="camisa"]:checked');
-                if(shirt) {
-                    data.camisa = shirt.value === 'Outro' ? (document.getElementById('camisaOutro').value || 'Outro') : shirt.value;
-                }
-                
-                // Coleta "Qual?" de saúde
                 ['alergias', 'cirurgiaRecente', 'tratamentoMedico', 'tomaMedicamento', 'problemaOrtopedico'].forEach(k => {
                     const sel = document.getElementById(k);
-                    if (sel && sel.value === 'Sim') {
-                        data[k] = `Sim (${document.getElementById(k+'Qual').value || ''})`;
-                    }
+                    if (sel && sel.value === 'Sim') data[k] = `Sim (${document.getElementById(k+'Qual').value || ''})`;
                 });
                 
-                // Metadata
-                data.status = 'pending';
-                data.createdAt = new Date().toISOString();
                 if(data.idade) data.idade = parseInt(data.idade);
-                
-                // Captura Polo (seja input ou select)
-                const poloEl = document.getElementById('polo');
-                if(poloEl) data.polo = poloEl.value;
+                const poloEl = document.getElementById('polo'); if(poloEl) data.polo = poloEl.value;
 
-                // Tenta calcular ID sequencial final
-                try {
-                    const snap = await getCountFromServer(collection(db, INSCRICOES_COLLECTION));
-                    data.inscricao = String(snap.data().count + 1).padStart(3, '0');
-                } catch(e) {
-                    // Fallback se não conseguir ler
-                    data.inscricao = "Pendente";
+                if (editId) {
+                    // MODO EDIÇÃO
+                    await updateDoc(doc(db, INSCRICOES_COLLECTION, editId), data);
+                    msg.textContent = '✅ Dados atualizados com sucesso!';
+                } else {
+                    // MODO CRIAÇÃO
+                    data.status = 'pending'; 
+                    data.createdAt = new Date().toISOString();
+                    try {
+                        const snap = await getCountFromServer(collection(db, INSCRICOES_COLLECTION));
+                        data.inscricao = String(snap.data().count + 1).padStart(3, '0');
+                    } catch(e) { data.inscricao = "Pendente"; }
+                    await addDoc(collection(db, INSCRICOES_COLLECTION), data);
+                    msg.textContent = '✅ Inscrição realizada com sucesso!';
                 }
-
-                // Salva no Firestore
-                await addDoc(collection(db, INSCRICOES_COLLECTION), data);
                 
-                // Sucesso
                 msg.className = 'mt-4 text-center text-sm font-medium text-green-600';
-                msg.textContent = '✅ Inscrição realizada com sucesso!';
-                form.reset();
                 
-                // Reload após 3s
                 setTimeout(() => {
                     if(auth.currentUser?.isAnonymous) signOut(auth);
+                    // Remove parametros da URL e recarrega
+                    window.history.replaceState({}, document.title, window.location.pathname);
                     window.location.reload();
-                }, 3000);
+                }, 2000);
 
             } catch (err) {
                 console.error(err);
                 msg.className = 'mt-4 text-center text-sm font-medium text-red-600';
-                
-                if (err.code === 'permission-denied') {
-                    msg.innerHTML = `⚠️ <b>Erro de Permissão (Firebase).</b><br>Ative o "Login Anônimo" no Console do Firebase ou libere as regras de escrita.`;
-                } else {
-                    msg.textContent = 'Erro ao enviar. Verifique sua conexão.';
-                }
-                
+                msg.textContent = err.code === 'permission-denied' ? 'Erro de Permissão. Ative o Auth Anônimo no Firebase.' : 'Erro ao enviar.';
                 btn.disabled = false;
                 document.getElementById('submit-loading').classList.add('hidden-section');
                 document.getElementById('submit-text').classList.remove('hidden-section');
@@ -710,12 +771,10 @@
         function initAdminPanel() {
             if(unsubscribe) unsubscribe();
             
-            // Carrega Configurações (Polos)
             getDoc(doc(db, SETTINGS_COLLECTION, "geral")).then(s => {
                 if(s.exists()) document.getElementById('settings-polos').value = s.data().polos || "";
             });
 
-            // Carrega Participantes (Tempo Real)
             const q = collection(db, INSCRICOES_COLLECTION);
             unsubscribe = onSnapshot(q, (snap) => {
                 allData = [];
@@ -731,49 +790,50 @@
             });
         }
         
-        // Salvar Configurações
         document.getElementById('save-settings-btn').addEventListener('click', async () => {
-            try {
-                await setDoc(doc(db, SETTINGS_COLLECTION, "geral"), { polos: document.getElementById('settings-polos').value });
-                alert('Configurações salvas!');
-            } catch(e) { alert('Erro ao salvar.'); }
+            try { await setDoc(doc(db, SETTINGS_COLLECTION, "geral"), { polos: document.getElementById('settings-polos').value }); alert('Salvo!'); } catch(e) { alert('Erro.'); }
         });
 
-        // Renumeração (Botão Perigoso)
         document.getElementById('renumber-all-btn').addEventListener('click', async () => {
-            if (!confirm("Renumerar TODOS os cadastros por data de criação?")) return;
-            
-            const btn = document.getElementById('renumber-all-btn');
-            const status = document.getElementById('renumber-status');
-            btn.disabled = true;
-            status.textContent = "Processando...";
-            
+            if (!confirm("Renumerar TODOS os cadastros?")) return;
+            const btn = document.getElementById('renumber-all-btn'); const status = document.getElementById('renumber-status');
+            btn.disabled = true; status.textContent = "Processando...";
             try {
                 const snap = await getDocs(query(collection(db, INSCRICOES_COLLECTION)));
-                let docs = [];
-                snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
-                
-                // Ordena: Mais antigo primeiro
+                let docs = []; snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
                 docs.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
-                
-                // Atualiza
                 for (let i = 0; i < docs.length; i++) {
                     const newId = String(i + 1).padStart(3, '0');
-                    if (docs[i].inscricao !== newId) {
-                        await updateDoc(doc(db, INSCRICOES_COLLECTION, docs[i].id), { inscricao: newId });
-                    }
+                    if (docs[i].inscricao !== newId) await updateDoc(doc(db, INSCRICOES_COLLECTION, docs[i].id), { inscricao: newId });
                     status.textContent = `Atualizando ${i+1}/${docs.length}...`;
                 }
-                status.textContent = "Concluído!";
-                status.className = "mt-2 text-xs font-bold text-green-600";
-            } catch (e) {
-                status.textContent = "Erro durante o processo.";
-                status.className = "mt-2 text-xs font-bold text-red-600";
-            }
+                status.textContent = "Concluído!"; status.className = "mt-2 text-xs font-bold text-green-600";
+            } catch (e) { status.textContent = "Erro."; status.className = "mt-2 text-xs font-bold text-red-600"; }
             btn.disabled = false;
         });
 
-        // Renderizadores
+        // Helpers Visuais e Links
+        const getWhatsappLink = (phone) => {
+            if(!phone) return '#';
+            let num = phone.replace(/\D/g, '');
+            if(num.length < 10) return '#'; 
+            if(!num.startsWith('55')) num = '55' + num;
+            return `https://wa.me/${num}`;
+        };
+
+        const copyEditLink = (id) => {
+            // Pega a URL atual limpa (sem parametros antigos)
+            const baseUrl = window.location.href.split('?')[0];
+            const link = `${baseUrl}?edit_id=${id}`;
+            
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Link copiado!\n\nIMPORTANTE: Esse link só funcionará para outra pessoa se este site estiver publicado na internet (ex: Vercel, Firebase Hosting). Se você estiver usando um visualizador de teste, o link pode não abrir para outras pessoas.');
+            }).catch(err => {
+                console.error('Erro ao copiar: ', err);
+                prompt("Copie o link manualmente:", link);
+            });
+        };
+
         function renderDashboard() {
             const total = allData.length;
             const approved = allData.filter(i => i.status === 'approved').length;
@@ -781,24 +841,11 @@
             const rejected = allData.filter(i => i.status === 'rejected').length;
             
             document.getElementById('admin-stats').innerHTML = `
-                <div class="bg-white p-4 rounded-lg border-l-4 border-blue-500 shadow-sm flex justify-between">
-                    <div><p class="text-xs font-bold text-gray-400">TOTAL</p><p class="text-2xl font-bold">${total}</p></div>
-                    <i data-lucide="users" class="text-gray-400"></i>
-                </div>
-                <div class="bg-white p-4 rounded-lg border-l-4 border-green-500 shadow-sm flex justify-between">
-                    <div><p class="text-xs font-bold text-gray-400">APROVADOS</p><p class="text-2xl font-bold text-green-600">${approved}</p></div>
-                    <i data-lucide="check-circle" class="text-green-400"></i>
-                </div>
-                <div class="bg-white p-4 rounded-lg border-l-4 border-yellow-500 shadow-sm flex justify-between">
-                    <div><p class="text-xs font-bold text-gray-400">PENDENTES</p><p class="text-2xl font-bold text-yellow-600">${pending.length}</p></div>
-                    <i data-lucide="clock" class="text-yellow-400"></i>
-                </div>
-                <div class="bg-white p-4 rounded-lg border-l-4 border-red-500 shadow-sm flex justify-between">
-                    <div><p class="text-xs font-bold text-gray-400">REJEITADOS</p><p class="text-2xl font-bold text-red-600">${rejected}</p></div>
-                    <i data-lucide="x-circle" class="text-red-400"></i>
-                </div>`;
+                <div class="bg-white p-4 rounded-lg border-l-4 border-blue-500 shadow-sm flex justify-between"><div><p class="text-xs font-bold text-gray-400">TOTAL</p><p class="text-2xl font-bold">${total}</p></div><i data-lucide="users" class="text-gray-400"></i></div>
+                <div class="bg-white p-4 rounded-lg border-l-4 border-green-500 shadow-sm flex justify-between"><div><p class="text-xs font-bold text-gray-400">APROVADOS</p><p class="text-2xl font-bold text-green-600">${approved}</p></div><i data-lucide="check-circle" class="text-green-400"></i></div>
+                <div class="bg-white p-4 rounded-lg border-l-4 border-yellow-500 shadow-sm flex justify-between"><div><p class="text-xs font-bold text-gray-400">PENDENTES</p><p class="text-2xl font-bold text-yellow-600">${pending.length}</p></div><i data-lucide="clock" class="text-yellow-400"></i></div>
+                <div class="bg-white p-4 rounded-lg border-l-4 border-red-500 shadow-sm flex justify-between"><div><p class="text-xs font-bold text-gray-400">REJEITADOS</p><p class="text-2xl font-bold text-red-600">${rejected}</p></div><i data-lucide="x-circle" class="text-red-400"></i></div>`;
             
-            // Lista Pendente
             const list = document.getElementById('pending-registrations-list');
             const empty = document.getElementById('no-pending-message');
             document.getElementById('pending-count-badge').textContent = pending.length;
@@ -810,11 +857,9 @@
                 empty.classList.add('hidden-section');
                 list.innerHTML = pending.map(i => `
                     <div class="bg-white p-3 rounded border shadow-sm flex justify-between items-center">
-                        <div class="font-bold text-gray-700">
-                            ${i.nome}
-                            <span class="text-xs font-normal text-gray-400 ml-2">#${i.inscricao||'?'}</span>
-                        </div>
+                        <div class="font-bold text-gray-700">${i.nome}<span class="text-xs font-normal text-gray-400 ml-2">#${i.inscricao||'?'}</span></div>
                         <div class="flex gap-2">
+                            <a href="${getWhatsappLink(i.telefone)}" target="_blank" class="btn btn-whatsapp text-xs py-1 px-2" title="Chamar no Zap"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
                             <button onclick="window.hA('${i.id}','approve')" class="btn btn-success text-xs py-1 px-2">OK</button>
                             <button onclick="window.oM('${i.id}')" class="btn btn-secondary text-xs py-1 px-2">Ver</button>
                         </div>
@@ -827,17 +872,8 @@
         function renderTable() {
             const q = document.getElementById('admin-search').value.toLowerCase();
             const s = document.getElementById('admin-sort').value;
-            
-            let d = allData.filter(i => {
-                const txt = (i.nome + i.cpf + i.email + i.inscricao).toLowerCase();
-                return txt.includes(q) && i.status !== 'rejected';
-            });
-            
-            d.sort((a,b) => {
-                if (s === 'name_asc') return (a.nome||'').localeCompare(b.nome||'');
-                return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-            });
-            
+            let d = allData.filter(i => (i.nome + i.cpf + i.email + i.inscricao).toLowerCase().includes(q) && i.status !== 'rejected');
+            d.sort((a,b) => s === 'name_asc' ? (a.nome||'').localeCompare(b.nome||'') : new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
             const tb = document.getElementById('all-participants-table-body');
             
             if(d.length === 0) {
@@ -847,25 +883,21 @@
                 document.getElementById('no-participants-message').classList.add('hidden-section');
                 tb.innerHTML = d.map(i => `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4">
-                            <span class="font-bold text-pink-600 bg-pink-50 px-2 rounded mr-2">#${i.inscricao||'--'}</span>
-                            ${i.nome}
-                        </td>
+                        <td class="px-6 py-4"><span class="font-bold text-pink-600 bg-pink-50 px-2 rounded mr-2">#${i.inscricao||'--'}</span>${i.nome}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">${i.cpf||'-'}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">${i.cidade||'-'}</td>
                         <td class="px-6 py-4"><span class="px-2 text-xs font-semibold bg-gray-100 rounded">${i.camisa||'-'}</span></td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 text-xs font-semibold rounded-full ${i.status==='approved'?'bg-green-100 text-green-800':'bg-yellow-100 text-yellow-800'}">
-                                ${i.status==='approved'?'Aprovado':'Pendente'}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
+                        <td class="px-6 py-4"><span class="px-2 text-xs font-semibold rounded-full ${i.status==='approved'?'bg-green-100 text-green-800':'bg-yellow-100 text-yellow-800'}">${i.status==='approved'?'Aprovado':'Pendente'}</span></td>
+                        <td class="px-6 py-4 text-right flex gap-2 justify-end">
+                            <button onclick="window.copyLink('${i.id}')" class="text-blue-600 hover:text-blue-800" title="Copiar Link de Edição"><i data-lucide="link" class="w-4 h-4"></i></button>
+                            <a href="${getWhatsappLink(i.telefone)}" target="_blank" class="text-green-600 hover:text-green-800" title="WhatsApp"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
                             <button onclick="window.oM('${i.id}')" class="text-pink-600 font-bold hover:underline">Editar</button>
                         </td>
                     </tr>
                 `).join('');
             }
             document.getElementById('table-footer-count').textContent = `${d.length} registros`;
+            if(window.lucide) lucide.createIcons();
         }
         
         document.getElementById('admin-search').addEventListener('input', renderTable);
@@ -874,75 +906,25 @@
         function renderRejected() {
             const r = allData.filter(i => i.status === 'rejected');
             const l = document.getElementById('rejected-registrations-list');
-            
-            if(r.length === 0) {
-                l.innerHTML = '';
-                document.getElementById('no-rejected-message').classList.remove('hidden-section');
-            } else {
+            if(r.length === 0) { l.innerHTML = ''; document.getElementById('no-rejected-message').classList.remove('hidden-section'); } else {
                 document.getElementById('no-rejected-message').classList.add('hidden-section');
-                l.innerHTML = r.map(i => `
-                    <div class="flex justify-between items-center p-3 bg-white border-b">
-                        <span class="font-bold text-gray-700">${i.nome}</span>
-                        <button onclick="window.hA('${i.id}','approve')" class="text-xs text-green-600 hover:underline">Restaurar</button>
-                    </div>
-                `).join('');
+                l.innerHTML = r.map(i => `<div class="flex justify-between items-center p-3 bg-white border-b"><span class="font-bold text-gray-700">${i.nome}</span><button onclick="window.hA('${i.id}','approve')" class="text-xs text-green-600 hover:underline">Restaurar</button></div>`).join('');
             }
         }
 
-        // Funções Globais (para onclick no HTML)
-        window.hA = async (id, act) => {
-            if(!confirm('Confirma?')) return;
-            try {
-                await updateDoc(doc(db, INSCRICOES_COLLECTION, id), {status: act==='approve'?'approved':'rejected'});
-            } catch(e) { alert('Erro'); }
-        };
+        window.hA = async (id, act) => { if(!confirm('Confirma?')) return; try { await updateDoc(doc(db, INSCRICOES_COLLECTION, id), {status: act==='approve'?'approved':'rejected'}); } catch(e) { alert('Erro'); } };
+        window.oM = (id) => { const i = allData.find(x => x.id === id); if(!i) return; const f = document.getElementById('edit-form'); f.querySelectorAll('input, select').forEach(el => { const k = el.id.replace('edit-', ''); if(i[k] !== undefined) el.value = i[k]; }); document.getElementById('details-modal').style.display='flex'; setTimeout(() => document.getElementById('details-modal').style.opacity=1, 10); document.getElementById('edit-doc-id').value=id; };
+        window.copyLink = copyEditLink;
         
-        window.oM = (id) => {
-            const i = allData.find(x => x.id === id);
-            if(!i) return;
-            
-            const f = document.getElementById('edit-form');
-            f.querySelectorAll('input, select').forEach(el => {
-                const k = el.id.replace('edit-', '');
-                if(i[k] !== undefined) el.value = i[k];
-            });
-            
-            document.getElementById('details-modal').style.display='flex';
-            setTimeout(() => document.getElementById('details-modal').style.opacity=1, 10);
-            document.getElementById('edit-doc-id').value=id;
-        };
-        
-        document.getElementById('close-modal-btn').onclick = () => {
-            document.getElementById('details-modal').style.opacity=0;
-            setTimeout(() => document.getElementById('details-modal').style.display='none', 200);
-        };
-        
+        document.getElementById('close-modal-btn').onclick = () => { document.getElementById('details-modal').style.opacity=0; setTimeout(() => document.getElementById('details-modal').style.display='none', 200); };
         document.getElementById('modal-save-btn').onclick = async () => {
-            const id = document.getElementById('edit-doc-id').value;
-            if(!id) return;
-            
-            const d = {};
-            document.getElementById('edit-form').querySelectorAll('input, select').forEach(el => {
-                d[el.id.replace('edit-', '')] = el.value;
-            });
-            
-            try {
-                await updateDoc(doc(db, INSCRICOES_COLLECTION, id), d);
-                alert('Salvo!');
-                document.getElementById('close-modal-btn').click();
-            } catch(e) { alert('Erro'); }
+            const id = document.getElementById('edit-doc-id').value; if(!id) return;
+            const d = {}; document.getElementById('edit-form').querySelectorAll('input, select').forEach(el => { d[el.id.replace('edit-', '')] = el.value; });
+            try { await updateDoc(doc(db, INSCRICOES_COLLECTION, id), d); alert('Salvo!'); document.getElementById('close-modal-btn').click(); } catch(e) { alert('Erro'); }
         };
-        
-        document.getElementById('modal-delete-btn').onclick = async () => {
-            const id = document.getElementById('edit-doc-id').value;
-            if(!id || !confirm('EXCLUIR?')) return;
-            try {
-                await deleteDoc(doc(db, INSCRICOES_COLLECTION, id));
-                document.getElementById('close-modal-btn').click();
-            } catch(e) { alert('Erro'); }
-        };
+        document.getElementById('modal-delete-btn').onclick = async () => { if(confirm('EXCLUIR?')) { try { await deleteDoc(doc(db, INSCRICOES_COLLECTION, document.getElementById('edit-doc-id').value)); document.getElementById('close-modal-btn').click(); } catch(e) { alert('Erro'); } }};
 
-        // Relatórios
+        // Relatórios (Expanded)
         document.getElementById('generate-report-btn').addEventListener('click', () => {
             const st = document.getElementById('report-status-filter').value;
             const sh = document.getElementById('report-camisa-filter').value;
@@ -959,12 +941,8 @@
             
             document.getElementById('report-results-container').classList.remove('hidden-section');
             document.getElementById('summary-total').textContent = res.length;
-            
-            const cam = {};
-            res.forEach(r => cam[r.camisa] = (cam[r.camisa]||0)+1);
-            document.getElementById('summary-camisas').innerHTML = Object.entries(cam).map(([k,v]) => 
-                `<span class="px-2 py-1 bg-white border rounded text-xs"><b>${k}:</b> ${v}</span>`
-            ).join('');
+            const cam = {}; res.forEach(r => cam[r.camisa] = (cam[r.camisa]||0)+1);
+            document.getElementById('summary-camisas').innerHTML = Object.entries(cam).map(([k,v]) => `<span class="px-2 py-1 bg-white border rounded text-xs"><b>${k}:</b> ${v}</span>`).join('');
             
             const cols = Array.from(document.querySelectorAll('#report-fields input:checked')).map(c => c.value);
             document.getElementById('report-table-head').innerHTML = `<tr>${cols.map(c => `<th class="px-4 py-2 text-left font-bold uppercase">${c}</th>`).join('')}</tr>`;
@@ -973,22 +951,8 @@
             window.lastReport = { headers: cols, data: res.map(r => cols.map(c => r[c]||'')) };
         });
         
-        document.getElementById('export-xlsx-btn').onclick = () => {
-            if(window.lastReport) {
-                const ws = XLSX.utils.aoa_to_sheet([window.lastReport.headers, ...window.lastReport.data]);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Relatorio");
-                XLSX.writeFile(wb, "relatorio.xlsx");
-            }
-        };
-        
-        document.getElementById('export-pdf-btn').onclick = () => {
-            if(window.lastReport) {
-                const doc = new window.jspdf.jsPDF({orientation:'landscape'});
-                doc.autoTable({head:[window.lastReport.headers], body:window.lastReport.data});
-                doc.save("relatorio.pdf");
-            }
-        };
+        document.getElementById('export-xlsx-btn').onclick = () => { if(window.lastReport) { const ws = XLSX.utils.aoa_to_sheet([window.lastReport.headers, ...window.lastReport.data]); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Relatorio"); XLSX.writeFile(wb, "relatorio.xlsx"); }};
+        document.getElementById('export-pdf-btn').onclick = () => { if(window.lastReport) { const doc = new window.jspdf.jsPDF({orientation:'landscape'}); doc.autoTable({head:[window.lastReport.headers], body:window.lastReport.data}); doc.save("relatorio.pdf"); }};
 
         if(window.lucide) lucide.createIcons();
     </script>
