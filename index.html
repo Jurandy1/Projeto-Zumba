@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro Projeto Zumba</title>
+    <title>Cadastro Projeto Zumba - Admin Pro</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-    <!-- Ícones (Lucide) - Usando link direto para o script que cria os ícones -->
+    <!-- Ícones (Lucide) -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Export libs -->
@@ -44,6 +44,7 @@
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
             transition: transform 300ms ease-in-out, background-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
             background: linear-gradient(135deg, #ec4899, #e11d48);
+            cursor: pointer;
         }
         .btn-zumba:hover { transform: scale(1.05); }
         
@@ -55,6 +56,7 @@
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
             transition: transform 300ms ease-in-out, background-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
             background: linear-gradient(135deg, #a3e635, #4d7c0f);
+            cursor: pointer;
         }
         .btn-zumba-alt:hover { transform: scale(1.05); }
         
@@ -66,6 +68,7 @@
             border-radius: 0.5rem;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             transition: background-color 300ms ease-in-out, transform 300ms ease-in-out;
+            cursor: pointer;
         }
         .btn-zumba-secondary:hover { background-color: #d1d5db; transform: scale(1.05); }
 
@@ -110,11 +113,11 @@
             position: fixed;
             inset: 0;
             z-index: 50;
-            display: none; /* Alterado para começar como none */
+            display: none;
             align-items: center;
             justify-content: center;
             background: rgba(0,0,0,0.75);
-            opacity: 0; /* Alterado para começar com opacidade 0 */
+            opacity: 0;
             transition: opacity 300ms ease-in-out;
         }
     </style>
@@ -186,7 +189,6 @@
                             </div>
                             <div>
                                 <label for="inscricao" class="form-label">N° Inscrição</label>
-                                <!-- Tornar o campo readonly e adicionar bg-gray-100 para indicar auto-preenchimento -->
                                 <input type="text" id="inscricao" class="form-input bg-gray-100" readonly>
                             </div>
                             <div>
@@ -223,7 +225,6 @@
                             </div>
                             <div>
                                 <label for="idade" class="form-label">Idade</label>
-                                <!-- Tornar o campo readonly e adicionar bg-gray-100 para indicar auto-preenchimento -->
                                 <input type="number" id="idade" class="form-input bg-gray-100" readonly required>
                             </div>
                         </div>
@@ -326,27 +327,12 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- CAMPOS DE UPLOAD DE ARQUIVO REMOVIDOS -->
                     </fieldset>
 
                     <!-- Seção 4: Histórico Patológico -->
                     <fieldset class="p-4 border rounded-lg">
                         <legend class="px-2 text-lg font-bold text-gray-800">Histórico Patológico (Saúde)</legend>
                         <div class="grid grid-cols-1 gap-y-4 gap-x-6 md:grid-cols-3">
-                            <!-- Helper para criar Sim/Não -->
-                            <script>
-                                // Este script é apenas para o template, não é executável aqui
-                                const healthQuestions = [
-                                    { id: 'bebidaAlcoolica', label: 'Faz uso de bebida alcoólica?' },
-                                    { id: 'fumante', label: 'É fumante?' },
-                                    { id: 'doadorSangue', label: 'Doador de sangue?' },
-                                    { id: 'cardiaco', label: 'Cardíaco?' },
-                                    { id: 'hipertenso', label: 'Hipertenso?' },
-                                    { id: 'diabetico', label: 'Diabético?' },
-                                    { id: 'epiletico', label: 'É epilético(a)?' }
-                                ];
-                            </script>
-                            
                             <!-- Perguntas Sim/Não -->
                             <template id="health-question-template">
                                 <div>
@@ -470,84 +456,162 @@
             <!-- Seção: Gestão de Todos os Participantes -->
             <div class="p-6 bg-white rounded-lg shadow-lg">
                 <div class="pb-4 border-b border-gray-200">
-                    <h2 class="text-2xl font-bold">Gestão de Todos os Participantes</h2>
-                    <p class="text-sm text-gray-500">Edite, aprove ou rejeite qualquer inscrição. Use a busca e o filtro acima.</p>
+                    <h2 class="text-2xl font-bold">Gestão Geral</h2>
+                    <p class="text-sm text-gray-500">Visualize todos os cadastros com busca rápida.</p>
                 </div>
-                <div id="all-participants-list" class="mt-4 space-y-4">
+                <div id="all-participants-list" class="mt-4 space-y-4 max-h-96 overflow-y-auto pr-2">
                     <!-- Todos os participantes (filtrados) serão injetados aqui -->
                     <p id="no-participants-message">Nenhum participante encontrado.</p>
                 </div>
             </div>
 
             <!-- Seção: Gerador de Relatórios -->
-            <div class="p-6 bg-white rounded-lg shadow-lg">
-                <h2 class="pb-4 text-2xl font-bold border-b border-gray-200">Gerador de Relatórios</h2>
-                <div class="mt-4 space-y-4">
-                    <p>Selecione os campos e filtros do relatório:</p>
-                    <p id="report-data-status" class="text-sm text-gray-600 italic">Carregando dados...</p>
+            <div class="p-6 bg-white rounded-lg shadow-lg border-2 border-pink-100">
+                <h2 class="pb-4 text-2xl font-bold border-b border-gray-200 text-pink-600 flex items-center gap-2">
+                    <i data-lucide="file-bar-chart-2"></i> Gerador de Relatórios Avançado
+                </h2>
+                <div class="mt-4 space-y-6">
+                    <p id="report-data-status" class="text-sm text-gray-600 italic text-right">Carregando dados...</p>
 
-                    <!-- Filtros -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-                        <div>
-                            <label class="form-label" for="report-status-filter">Status</label>
-                            <select id="report-status-filter" class="form-select">
-                                <option value="approved" selected>Aprovados</option>
-                                <option value="pending">Pendentes</option>
-                                <option value="rejected">Rejeitados</option>
-                                <option value="all">Todos</option>
-                            </select>
+                    <!-- GRUPO 1: FILTROS DE CADASTRO -->
+                    <div class="bg-pink-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-gray-700 mb-3 border-b border-pink-200 pb-1">1. Filtros de Cadastro (Status e Data)</h3>
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                            <div>
+                                <label class="form-label" for="report-status-filter">Status da Inscrição</label>
+                                <select id="report-status-filter" class="form-select">
+                                    <option value="approved" selected>Aprovados</option>
+                                    <option value="pending">Pendentes</option>
+                                    <option value="rejected">Rejeitados</option>
+                                    <option value="all">Todos</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" for="report-date-start">Data Cadastro (De)</label>
+                                <input type="date" id="report-date-start" class="form-input">
+                            </div>
+                            <div>
+                                <label class="form-label" for="report-date-end">Data Cadastro (Até)</label>
+                                <input type="date" id="report-date-end" class="form-input">
+                            </div>
                         </div>
-                        <div>
-                            <label class="form-label" for="report-date-start">Data início (criação)</label>
-                            <input type="date" id="report-date-start" class="form-input">
-                        </div>
-                        <div>
-                            <label class="form-label" for="report-date-end">Data fim (criação)</label>
-                            <input type="date" id="report-date-end" class="form-input">
-                        </div>
-                        <div>
-                            <label class="form-label" for="report-city-filter">Cidade</label>
-                            <input type="text" id="report-city-filter" class="form-input" placeholder="Filtrar por cidade">
-                        </div>
-                        <div>
-                            <label class="form-label" for="report-uf-filter">UF</label>
-                            <input type="text" id="report-uf-filter" class="form-input" placeholder="Filtrar por UF" maxlength="2">
+                    </div>
+
+                    <!-- GRUPO 2: FILTROS DE PERFIL E LOCALIZAÇÃO (NOVO!) -->
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-gray-700 mb-3 border-b border-blue-200 pb-1">2. Filtros de Perfil e Localização</h3>
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6">
+                            <!-- Filtro de Camisa -->
+                            <div class="lg:col-span-1">
+                                <label class="form-label text-blue-800" for="report-camisa-filter">Tam. Camisa</label>
+                                <select id="report-camisa-filter" class="form-select border-blue-200">
+                                    <option value="all" selected>Todos</option>
+                                    <option value="PP">PP</option>
+                                    <option value="P">P</option>
+                                    <option value="M">M</option>
+                                    <option value="G">G</option>
+                                    <option value="GG">GG</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                             <!-- Filtro de Sexo -->
+                             <div class="lg:col-span-1">
+                                <label class="form-label text-blue-800" for="report-sexo-filter">Sexo</label>
+                                <select id="report-sexo-filter" class="form-select border-blue-200">
+                                    <option value="all" selected>Todos</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Feminino">Feminino</option>
+                                </select>
+                            </div>
+                            <!-- Filtro de Bairro -->
+                            <div class="lg:col-span-2">
+                                <label class="form-label text-blue-800" for="report-bairro-filter">Bairro</label>
+                                <input type="text" id="report-bairro-filter" class="form-input border-blue-200" placeholder="Digite o bairro...">
+                            </div>
+                            <!-- Filtro de Cidade -->
+                            <div class="lg:col-span-2">
+                                <label class="form-label text-blue-800" for="report-city-filter">Cidade</label>
+                                <input type="text" id="report-city-filter" class="form-input border-blue-200" placeholder="Digite a cidade...">
+                            </div>
+                            <!-- Filtro de Idade -->
+                            <div class="lg:col-span-1">
+                                <label class="form-label text-blue-800" for="report-age-min">Idade Mín.</label>
+                                <input type="number" id="report-age-min" class="form-input border-blue-200" placeholder="0">
+                            </div>
+                            <div class="lg:col-span-1">
+                                <label class="form-label text-blue-800" for="report-age-max">Idade Máx.</label>
+                                <input type="number" id="report-age-max" class="form-input border-blue-200" placeholder="100">
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Checkboxes dos Campos -->
-                    <div id="report-fields" class="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
-                        <!-- Campos para o relatório -->
-                        <label class="flex items-center"><input type="checkbox" value="nome" class="mr-2 rounded text-pink-500"> Nome</label>
-                        <label class="flex items-center"><input type="checkbox" value="status" class="mr-2 rounded text-pink-500"> Status</label>
-                        <label class="flex items-center"><input type="checkbox" value="createdAt" class="mr-2 rounded text-pink-500"> Data de criação</label>
-                        <label class="flex items-center"><input type="checkbox" value="idade" class="mr-2 rounded text-pink-500"> Idade</label>
-                        <label class="flex items-center"><input type="checkbox" value="telefone" class="mr-2 rounded text-pink-500"> Telefone</label>
-                        <label class="flex items-center"><input type="checkbox" value="tipoSanguineo" class="mr-2 rounded text-pink-500"> Tipo Sanguíneo</label>
-                        <label class="flex items-center"><input type="checkbox" value="polo" class="mr-2 rounded text-pink-500"> Polo</label>
-                        <label class="flex items-center"><input type="checkbox" value="sexo" class="mr-2 rounded text-pink-500"> Sexo</label>
-                        <label class="flex items-center"><input type="checkbox" value="bairro" class="mr-2 rounded text-pink-500"> Bairro</label>
-                        <label class="flex items-center"><input type="checkbox" value="cidade" class="mr-2 rounded text-pink-500"> Cidade</label>
-                        <label class="flex items-center"><input type="checkbox" value="uf" class="mr-2 rounded text-pink-500"> UF</label>
-                        <label class="flex items-center"><input type="checkbox" value="camisa" class="mr-2 rounded text-pink-500"> Tam. Camisa</label>
-                        <label class="flex items-center"><input type="checkbox" value="hipertenso" class="mr-2 rounded text-pink-500"> Hipertenso</label>
-                        <label class="flex items-center"><input type="checkbox" value="diabetico" class="mr-2 rounded text-pink-500"> Diabético</label>
-                        <label class="flex items-center"><input type="checkbox" value="cardiaco" class="mr-2 rounded text-pink-500"> Cardíaco</label>
-                        <label class="flex items-center"><input type="checkbox" value="cpf" class="mr-2 rounded text-pink-500"> CPF</label>
-                        <label class="flex items-center"><input type="checkbox" value="rg" class="mr-2 rounded text-pink-500"> RG</label>
-                        <label class="flex items-center"><input type="checkbox" value="estadoCivil" class="mr-2 rounded text-pink-500"> Estado Civil</label>
-                        <label class="flex items-center"><input type="checkbox" value="profissao" class="mr-2 rounded text-pink-500"> Profissão</label>
-                        <label class="flex items-center"><input type="checkbox" value="empregado" class="mr-2 rounded text-pink-500"> Empregado</label>
-                        <label class="flex items-center"><input type="checkbox" value="epiletico" class="mr-2 rounded text-pink-500"> Epiléptico</label>
-                        <label class="flex items-center"><input type="checkbox" value="cep" class="mr-2 rounded text-pink-500"> CEP</label>
+                    <div>
+                        <h3 class="font-bold text-gray-700 mb-2">3. Selecione as Colunas para Exibir:</h3>
+                        <div id="report-fields" class="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6 p-4 border rounded bg-gray-50">
+                            <label class="flex items-center"><input type="checkbox" value="nome" checked class="mr-2 rounded text-pink-500 w-4 h-4"> Nome</label>
+                            <label class="flex items-center"><input type="checkbox" value="camisa" checked class="mr-2 rounded text-pink-500 w-4 h-4 font-bold text-pink-700"> Tam. Camisa</label>
+                            <label class="flex items-center"><input type="checkbox" value="telefone" checked class="mr-2 rounded text-pink-500 w-4 h-4"> Telefone</label>
+                            <label class="flex items-center"><input type="checkbox" value="idade" checked class="mr-2 rounded text-pink-500 w-4 h-4"> Idade</label>
+                            <label class="flex items-center"><input type="checkbox" value="bairro" class="mr-2 rounded text-pink-500 w-4 h-4"> Bairro</label>
+                            <label class="flex items-center"><input type="checkbox" value="status" class="mr-2 rounded text-pink-500 w-4 h-4"> Status</label>
+                            
+                            <label class="flex items-center"><input type="checkbox" value="sexo" class="mr-2 rounded text-pink-500 w-4 h-4"> Sexo</label>
+                            <label class="flex items-center"><input type="checkbox" value="tipoSanguineo" class="mr-2 rounded text-pink-500 w-4 h-4"> Tipo Sanguíneo</label>
+                            <label class="flex items-center"><input type="checkbox" value="polo" class="mr-2 rounded text-pink-500 w-4 h-4"> Polo</label>
+                            <label class="flex items-center"><input type="checkbox" value="cidade" class="mr-2 rounded text-pink-500 w-4 h-4"> Cidade</label>
+                            <label class="flex items-center"><input type="checkbox" value="uf" class="mr-2 rounded text-pink-500 w-4 h-4"> UF</label>
+                            <label class="flex items-center"><input type="checkbox" value="hipertenso" class="mr-2 rounded text-pink-500 w-4 h-4"> Hipertenso</label>
+                            <label class="flex items-center"><input type="checkbox" value="diabetico" class="mr-2 rounded text-pink-500 w-4 h-4"> Diabético</label>
+                            <label class="flex items-center"><input type="checkbox" value="cardiaco" class="mr-2 rounded text-pink-500 w-4 h-4"> Cardíaco</label>
+                            <label class="flex items-center"><input type="checkbox" value="cpf" class="mr-2 rounded text-pink-500 w-4 h-4"> CPF</label>
+                            <label class="flex items-center"><input type="checkbox" value="rg" class="mr-2 rounded text-pink-500 w-4 h-4"> RG</label>
+                            <label class="flex items-center"><input type="checkbox" value="estadoCivil" class="mr-2 rounded text-pink-500 w-4 h-4"> Estado Civil</label>
+                            <label class="flex items-center"><input type="checkbox" value="profissao" class="mr-2 rounded text-pink-500 w-4 h-4"> Profissão</label>
+                            <label class="flex items-center"><input type="checkbox" value="empregado" class="mr-2 rounded text-pink-500 w-4 h-4"> Empregado</label>
+                            <label class="flex items-center"><input type="checkbox" value="createdAt" class="mr-2 rounded text-pink-500 w-4 h-4"> Data de criação</label>
+                        </div>
                     </div>
 
-                    <button id="generate-report-btn" class="btn-zumba">Gerar Relatório</button>
+                    <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                        <button id="generate-report-btn" class="btn-zumba w-full md:w-auto flex items-center justify-center gap-2">
+                            <i data-lucide="filter"></i> Filtrar e Gerar Relatório
+                        </button>
+                        <button id="clear-filters-btn" class="btn-zumba-secondary text-sm">Limpar Filtros</button>
+                    </div>
 
                     <!-- Resultados do Relatório -->
-                    <div id="report-results-container" class="hidden-section mt-6">
-                        <h3 class="text-xl font-semibold">Resultados do Relatório</h3>
-                        <div class="mt-2 overflow-x-auto">
+                    <div id="report-results-container" class="hidden-section mt-6 border-t-2 border-gray-200 pt-6">
+                        
+                        <!-- PAINEL DE RESUMO RÁPIDO (DASHBOARD) -->
+                        <div id="report-summary-panel" class="bg-gray-100 p-4 rounded-lg mb-4 border border-gray-300">
+                            <h4 class="font-bold text-lg text-gray-800 flex items-center gap-2">
+                                <i data-lucide="pie-chart"></i> Resumo Estatístico da Seleção
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 text-sm">
+                                <div>
+                                    <p class="font-semibold text-gray-600">Total Encontrado:</p>
+                                    <p class="text-2xl font-black text-pink-600" id="summary-total">0</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-600">Distribuição de Camisas:</p>
+                                    <ul id="summary-camisas" class="list-disc list-inside text-gray-700 font-medium">
+                                        <!-- Injetado via JS -->
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-600">Distribuição de Sexo:</p>
+                                    <p id="summary-sexo" class="text-gray-700 font-medium"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-semibold">Tabela Detalhada</h3>
+                            <div class="text-sm text-gray-500" id="results-count"></div>
+                        </div>
+
+                        <div class="mt-2 overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                             <table id="report-table" class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50" id="report-table-head">
                                     <!-- Cabeçalho da tabela gerado via JS -->
@@ -557,10 +621,10 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="mt-4 flex gap-2 flex-wrap">
-                            <button id="export-csv-btn" class="btn-zumba-secondary">Exportar CSV</button>
-                            <button id="export-xlsx-btn" class="btn-zumba-secondary">Exportar XLSX</button>
-                            <button id="export-pdf-btn" class="btn-zumba-secondary">Exportar PDF</button>
+                        <div class="mt-4 flex gap-2 flex-wrap justify-end">
+                            <button id="export-csv-btn" class="btn-zumba-secondary flex items-center gap-1"><i data-lucide="file-text" class="w-4 h-4"></i> CSV</button>
+                            <button id="export-xlsx-btn" class="btn-zumba-secondary flex items-center gap-1"><i data-lucide="sheet" class="w-4 h-4"></i> Excel</button>
+                            <button id="export-pdf-btn" class="btn-zumba-secondary flex items-center gap-1"><i data-lucide="file" class="w-4 h-4"></i> PDF</button>
                         </div>
                     </div>
                 </div>
@@ -589,12 +653,9 @@
                 </div>
                 
                 <div class="mt-4 max-h-[70vh] overflow-y-auto pr-2">
-                    <!-- Conteúdo do modal (formulário de edição) -->
-                    <!-- Usaremos o mesmo formulário de cadastro, mas com ID "edit-" -->
                     <form id="edit-form" class="space-y-6">
                         <input type="hidden" id="edit-doc-id">
                         
-                        <!-- REMOVIDA A SEÇÃO DE VISUALIZAÇÃO DE FOTO E RG -->
                         <div class="flex flex-col items-center gap-4 md:flex-row">
                             <div class="flex-1">
                                 <h3 class="text-lg font-semibold text-center" id="edit-nome-display">Carregando...</h3>
@@ -706,7 +767,7 @@
                 
                 <!-- Botões do Modal -->
                 <div class="flex justify-end gap-4 pt-4 mt-6 border-t">
-                    <button id="modal-delete-btn" class="px-4 py-2 font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700">Deletar Inscrição</button>
+                    <button id="modal-delete-btn" class="px-4 py-2 font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700">Deletar</button>
                     <button id="modal-save-btn" class="px-4 py-2 font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700">Salvar Alterações</button>
                 </div>
                 <p id="modal-message" class="mt-2 text-sm text-center"></p>
@@ -718,16 +779,14 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
             getAuth, 
             signInWithEmailAndPassword, 
-            // createUserWithEmailAndPassword, // Removido - Não é mais usado para inscrição
             signOut, 
             onAuthStateChanged,
             setPersistence,
-            browserLocalPersistence // Manter usuário logado
+            browserLocalPersistence
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -735,32 +794,17 @@
             addDoc, 
             doc, 
             getDoc, 
-            // setDoc, // Não usado no fluxo principal
             updateDoc, 
             deleteDoc, 
             query, 
-            // where, // Não usado
             onSnapshot,
-            // getDocs, // Não usado
             setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // IMPORTAÇÕES DO STORAGE REMOVIDAS
-        /*
-        import { 
-            getStorage, 
-            ref, 
-            uploadBytes, 
-            getDownloadURL,
-            deleteObject
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
-        */
 
         // ==================================================================
         // CONFIGURAÇÃO
         // ==================================================================
         
-        // Configuração do Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyCrH_LFHenyWx-ITRCTWeNVqf8O-0e3pJY",
           authDomain: "zumba-2a827.firebaseapp.com",
@@ -770,41 +814,25 @@
           appId: "1:325248310095:web:2673845967b7bc60f6833a"
         };
         
-        // UID do Administrador
         const ADMIN_UID = "mNenvFEpf1SnDCY2kXLUaDlgtP03"; 
-        
-        // NOME DA COLEÇÃO
         const INSCRICOES_COLLECTION = "inscricoes_zumba";
         
         // ==================================================================
-        // FIM DA CONFIGURAÇÃO
-        // ==================================================================
 
-        // Inicialização do Firebase
-        var app, auth, db; // Variável 'storage' removida. Usando 'var' para compatibilidade.
+        var app, auth, db;
         try {
-            // VERIFICAÇÃO DO ADMIN_UID
-            if (ADMIN_UID === "COLE_SEU_ADMIN_UID_AQUI") {
-                throw new Error("ADMIN_UID não foi configurado.");
-            }
-            
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
-            // storage = getStorage(app); // Inicialização 'storage' removida
             setLogLevel('debug');
-            console.log("Firebase inicializado com sucesso.");
+            console.log("Firebase inicializado.");
         } catch (error) {
-            console.error("Erro ao inicializar o Firebase:", error);
-            document.body.innerHTML = `<div class="p-8 text-center text-red-600 bg-red-100">
-                <h1 class="text-2xl font-bold">Erro de Configuração do Firebase</h1>
-                <p class="mt-2">Não foi possível conectar ao Firebase. Verifique se o objeto 'firebaseConfig' está correto e se o 'ADMIN_UID' (linha 938) foi preenchido.</p>
-                <p class="mt-1 text-sm">Abra o console (F12) para mais detalhes.</p>
-                </div>`;
+            console.error("Erro ao inicializar Firebase:", error);
+            document.body.innerHTML = `<div class="p-8 text-center text-red-600 bg-red-100">Erro de Configuração do Firebase. Veja o console.</div>`;
         }
 
 
-        // Referências dos Elementos DOM
+        // Referências DOM
         const loginView = document.getElementById('login-view');
         const registerView = document.getElementById('register-view');
         const adminPanel = document.getElementById('admin-panel');
@@ -827,7 +855,6 @@
         const noPendingMsg = document.getElementById('no-pending-message');
         const rejectedList = document.getElementById('rejected-registrations-list');
         const noRejectedMsg = document.getElementById('no-rejected-message');
-        // NOVAS REFERÊNCIAS
         const allParticipantsList = document.getElementById('all-participants-list');
         const noParticipantsMsg = document.getElementById('no-participants-message');
 
@@ -837,24 +864,33 @@
         const modalDeleteBtn = document.getElementById('modal-delete-btn');
         const modalMessage = document.getElementById('modal-message');
         
+        // Relatórios
         const reportFields = document.getElementById('report-fields');
         const generateReportBtn = document.getElementById('generate-report-btn');
+        const clearFiltersBtn = document.getElementById('clear-filters-btn');
         const reportResultsContainer = document.getElementById('report-results-container');
         const reportTableHead = document.getElementById('report-table-head');
         const reportTableBody = document.getElementById('report-table-body');
         const exportCsvBtn = document.getElementById('export-csv-btn');
         const exportXlsxBtn = document.getElementById('export-xlsx-btn');
         const exportPdfBtn = document.getElementById('export-pdf-btn');
+        
+        // Inputs de Filtro
         const statusFilter = document.getElementById('report-status-filter');
         const dateStartInput = document.getElementById('report-date-start');
         const dateEndInput = document.getElementById('report-date-end');
         const cityFilterInput = document.getElementById('report-city-filter');
+        const bairroFilterInput = document.getElementById('report-bairro-filter');
+        const camisaFilterInput = document.getElementById('report-camisa-filter');
+        const sexoFilterInput = document.getElementById('report-sexo-filter');
+        const ageMinInput = document.getElementById('report-age-min');
+        const ageMaxInput = document.getElementById('report-age-max');
+        
         const adminStats = document.getElementById('admin-stats');
-        const ufFilterInput = document.getElementById('report-uf-filter');
-        var lastReportData = { headers: [], rows: [] }; // Usando 'var'
+        var lastReportData = { headers: [], rows: [] }; 
 
         // =================================================
-        // Lógica de Navegação e Helpers
+        // Lógica de Navegação
         // =================================================
 
         const showView = (viewId) => {
@@ -863,7 +899,6 @@
             });
             document.getElementById(viewId).classList.remove('hidden-section');
             
-            // Se for para a tela de registro, gera o número de inscrição
             if (viewId === 'register-view') {
                  generateInscricaoNumber();
                  setTodayDate();
@@ -871,16 +906,21 @@
                  var cpfEl = document.getElementById('cpf'); if (cpfEl) cpfEl.addEventListener('input', function(){ this.value = formatCpf(this.value); });
                  var telEl = document.getElementById('telefone'); if (telEl) telEl.addEventListener('input', function(){ this.value = formatPhone(this.value); });
                  var ufEl = document.getElementById('uf'); if (ufEl) ufEl.addEventListener('input', function(){ this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0,2); });
+                 
+                 // Inicializar ícones quando a view muda
+                 if(window.lucide) lucide.createIcons();
+            }
+            if (viewId === 'admin-panel') {
+                if(window.lucide) lucide.createIcons();
             }
         };
 
-        // Geração automática do N° Inscrição (Exemplo: Z241112-XXXX)
         function generateInscricaoNumber() {
             const date = new Date();
             const year = String(date.getFullYear()).slice(-2);
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
-            const random = Math.floor(100 + Math.random() * 900); // Número de 3 dígitos
+            const random = Math.floor(100 + Math.random() * 900); 
             inscricaoInput.value = `Z${year}${month}${day}-${random}`;
         }
 
@@ -892,34 +932,12 @@
             document.getElementById('data').value = `${yyyy}-${mm}-${dd}`;
         }
 
-        function formatCep(v) {
-            return v.replace(/\D/g, '').slice(0, 8).replace(/(\d{5})(\d)/, '$1-$2');
-        }
-
-        function formatCpf(v) {
-            return v.replace(/\D/g, '').slice(0, 11)
-                     .replace(/(\d{3})(\d)/, '$1.$2')
-                     .replace(/(\d{3})(\d)/, '$1.$2')
-                     .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        }
-
+        function formatCep(v) { return v.replace(/\D/g, '').slice(0, 8).replace(/(\d{5})(\d)/, '$1-$2'); }
+        function formatCpf(v) { return v.replace(/\D/g, '').slice(0, 11).replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2'); }
         function formatPhone(v) {
             var digits = v.replace(/\D/g, '').slice(0, 11);
-            if (digits.length <= 10) {
-                return digits.replace(/(\d{0,2})(\d{0,4})(\d{0,4})/, function(_, a, b, c){
-                    var p1 = a ? `(${a}` : '';
-                    var p2 = b ? `) ${b}` : (a ? ')' : '');
-                    var p3 = c ? `-${c}` : '';
-                    return `${p1}${p2}${p3}`;
-                });
-            } else {
-                return digits.replace(/(\d{0,2})(\d{0,5})(\d{0,4})/, function(_, a, b, c){
-                    var p1 = a ? `(${a}` : '';
-                    var p2 = b ? `) ${b}` : (a ? ')' : '');
-                    var p3 = c ? `-${c}` : '';
-                    return `${p1}${p2}${p3}`;
-                });
-            }
+            if (digits.length <= 10) { return digits.replace(/(\d{0,2})(\d{0,4})(\d{0,4})/, '($1) $2-$3'); } 
+            else { return digits.replace(/(\d{0,2})(\d{0,5})(\d{0,4})/, '($1) $2-$3'); }
         }
 
         function setupCepAutoFill(cepInputId, map) {
@@ -937,8 +955,7 @@
                             if (map.cidade) { var el3 = document.getElementById(map.cidade); if (el3) el3.value = data.localidade || ''; }
                             if (map.uf) { var el4 = document.getElementById(map.uf); if (el4) el4.value = data.uf || ''; }
                         }
-                    })
-                    .catch(function(){});
+                    }).catch(function(){});
             }
             cepInput.addEventListener('blur', lookup);
             cepInput.addEventListener('input', function(){ this.value = formatCep(this.value); });
@@ -955,60 +972,42 @@
                 const m = today.getMonth() - birthDate.getMonth();
                 if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
                 ageEl.value = age;
-            } else {
-                ageEl.value = '';
-            }
+            } else { ageEl.value = ''; }
         }
 
-        // Cálculo automático da Idade
         function calculateAge() {
             const birthDateStr = dataNascimentoInput.value;
             if (birthDateStr) {
                 const today = new Date();
                 const birthDate = new Date(birthDateStr);
-                var age = today.getFullYear() - birthDate.getFullYear(); // Usando 'var'
+                var age = today.getFullYear() - birthDate.getFullYear();
                 const m = today.getMonth() - birthDate.getMonth();
-
-                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
                 idadeInput.value = age;
-            } else {
-                idadeInput.value = '';
-            }
+            } else { idadeInput.value = ''; }
         }
         
-        // Listener para calcular idade
         dataNascimentoInput.addEventListener('change', calculateAge);
         const editBirthEl = document.getElementById('edit-dataNascimento');
         if (editBirthEl) editBirthEl.addEventListener('change', function(){ calculateAgeFor('edit-dataNascimento','edit-idade'); });
-
 
         goToRegisterBtn.addEventListener('click', () => showView('register-view'));
         backToLoginBtn.addEventListener('click', () => showView('login-view'));
 
         // =================================================
-        // Lógica de Autenticação
+        // Autenticação
         // =================================================
 
-        // Observador do estado de autenticação
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Usuário está logado
                 if (user.uid === ADMIN_UID) {
-                    // É o Admin
-                    console.log("Admin logado:", user.uid);
                     showView('admin-panel');
                     loadAdminPanelData();
                 } else {
-                    // É um usuário comum (situação inesperada, deslogar)
-                    console.warn("Usuário não-admin logado, deslogando:", user.uid);
                     signOut(auth);
                     showView('login-view');
                 }
             } else {
-                // Usuário está deslogado
-                console.log("Nenhum usuário logado.");
                 showView('login-view');
             }
         });
@@ -1017,42 +1016,30 @@
         var telEditEl = document.getElementById('edit-telefone'); if (telEditEl) telEditEl.addEventListener('input', function(){ this.value = formatPhone(this.value); });
         var ufEditEl = document.getElementById('edit-uf'); if (ufEditEl) ufEditEl.addEventListener('input', function(){ this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0,2); });
 
-        // Login do Admin
         adminLoginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('admin-email').value;
             const password = document.getElementById('admin-password').value;
             authError.textContent = '';
-
             try {
-                // Manter o admin logado
                 await setPersistence(auth, browserLocalPersistence);
                 await signInWithEmailAndPassword(auth, email, password);
-                // O onAuthStateChanged vai cuidar de redirecionar
             } catch (error) {
-                console.error("Erro no login:", error.message);
                 authError.textContent = 'Email ou senha inválidos.';
             }
         });
 
-        // Logout do Admin
         adminLogoutBtn.addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-                // O onAuthStateChanged vai cuidar de redirecionar
-            } catch (error) {
-                console.error("Erro no logout:", error.message);
-            }
+            try { await signOut(auth); } catch (error) { console.error(error); }
         });
 
         // =================================================
-        // Lógica de Cadastro do Usuário
+        // Cadastro
         // =================================================
 
-        // Gerar campos de saúde
         const healthContainer = document.getElementById('health-questions-container');
         const healthTemplate = document.getElementById('health-question-template');
-        const healthQuestions = [
+        const healthQs = [
             { id: 'bebidaAlcoolica', label: 'Faz uso de bebida alcoólica?' },
             { id: 'fumante', label: 'É fumante?' },
             { id: 'doadorSangue', label: 'Doador de sangue?' },
@@ -1062,54 +1049,40 @@
             { id: 'epiletico', label: 'É epilético(a)?' }
         ];
         
-        healthQuestions.forEach(q => {
+        healthQs.forEach(q => {
             const clone = healthTemplate.content.cloneNode(true);
             clone.querySelector('label').textContent = q.label;
             clone.querySelector('select').id = q.id;
             healthContainer.appendChild(clone);
         });
 
-
-        // Envio do Formulário de Cadastro (SEM AUTENTICAÇÃO DE USUÁRIO)
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             setRegisterLoading(true);
             registerMessage.textContent = '';
-
-            // Lógica de upload de arquivos (fotoFile, rgFile) removida.
             
             try {
-                // O upload de arquivos (Storage) não está sendo feito,
-                // então não precisamos de URLs (photoURL, rgURL).
-                
-                // 1. Coletar dados do formulário
-                var formData = getAllFormData('register-form'); // Usando 'var'
-                formData.photoURL = null; // Removido
-                formData.rgURL = null; // Removido
+                var formData = getAllFormData('register-form'); 
+                formData.photoURL = null; 
+                formData.rgURL = null; 
                 formData.status = 'pending';
                 formData.createdAt = new Date().toISOString();
-                // Não criamos mais usuário temporário, então não temos userId ou email aqui
+                // Conversão de números para filtro
+                if(formData.idade) formData.idade = parseInt(formData.idade);
 
-                // 2. Salvar no Firestore
-                console.log("Tentando salvar no Firestore na coleção:", INSCRICOES_COLLECTION);
-                const docRef = await addDoc(collection(db, INSCRICOES_COLLECTION), formData);
+                await addDoc(collection(db, INSCRICOES_COLLECTION), formData);
                 
-                console.log("Inscrição enviada com ID:", docRef.id);
                 setRegisterLoading(false);
                 registerMessage.textContent = 'Inscrição enviada com sucesso! O administrador irá analisar seu cadastro.';
                 registerMessage.className = 'text-sm text-center text-green-600';
                 registerForm.reset();
-                
-                // Não precisamos deslogar, pois o usuário nunca foi logado
-                showView('login-view'); // Voltar para o login
+                showView('login-view'); 
 
             } catch (error) {
                 console.error("Erro ao enviar inscrição:", error);
                 setRegisterLoading(false);
-
-                // Diagnóstico para o problema de permissão no Firestore
                 if (error.code && error.code.includes('permission-denied')) {
-                     registerMessage.textContent = `Erro de Permissão (Firestore). Verifique as Regras de Segurança do Firebase para a coleção "${INSCRICOES_COLLECTION}" (allow create: if true;).`;
+                     registerMessage.textContent = `Erro de Permissão (Firestore).`;
                 } else {
                     registerMessage.textContent = `Erro ao enviar inscrição: ${error.message}`;
                 }
@@ -1131,86 +1104,63 @@
             }
         }
         
-        // Função helper para pegar todos os dados de um formulário
         function getAllFormData(formId) {
             const form = document.getElementById(formId);
-            const formData = new FormData(form);
-            var data = {}; // Usando 'var'
-            
-            // Inputs de texto, número, data, select
+            var data = {}; 
             form.querySelectorAll('input, select').forEach(input => {
-                if (input.type === 'radio' || input.type === 'checkbox' || input.type === 'file') return; // Handled below or ignored
+                if (input.type === 'radio' || input.type === 'checkbox' || input.type === 'file') return;
                 if (input.id) {
-                     // Remove 'edit-' prefix if present
                     const key = input.id.startsWith('edit-') ? input.id.substring(5) : input.id;
                     if (key) data[key] = input.value;
                 }
             });
-
-            // Radio buttons
             form.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
                 const key = radio.name.startsWith('edit-') ? radio.name.substring(5) : radio.name;
                 if (key === 'camisa' && radio.value === 'Outro') {
                      const outroId = formId === 'edit-form' ? 'edit-camisaOutro' : 'camisaOutro';
                      data[key] = document.getElementById(outroId).value || 'Outro';
-                } else {
-                    data[key] = radio.value;
-                }
+                } else { data[key] = radio.value; }
             });
-            
-            // Ajuste para campos com "Qual"
             ['alergias', 'cirurgiaRecente', 'tratamentoMedico', 'tomaMedicamento', 'problemaOrtopedico'].forEach(key => {
                 const prefix = formId === 'edit-form' ? 'edit-' : '';
-                const selectValue = data[key]; // Já deve ter pego o Sim/Não
+                const selectValue = data[key];
                 if (selectValue === 'Sim') {
                     const qualValue = document.getElementById(`${prefix}${key}Qual`).value;
                     data[key] = `Sim (${qualValue || 'N/A'})`;
                 }
             });
-            
-            // Limpar campos "Qual" desnecessários
             ['alergiasQual', 'cirurgiaRecenteQual', 'tratamentoMedicoQual', 'tomaMedicamentoQual', 'problemaOrtopedicoQual', 'camisaOutro'].forEach(key => {
-                 delete data[key];
-                 delete data[`edit-${key}`]; // Limpar a chave com prefixo também
+                 delete data[key]; delete data[`edit-${key}`];
             });
-
             return data;
         }
 
-
         // =================================================
-        // Lógica do Painel Admin
+        // Painel Admin
         // =================================================
         
-        var allRegistrations = []; // Cache para relatórios. Usando 'var'
-        var allRegistrationsUnsubscribe = null; // Listener do Firestore. Usando 'var'
+        var allRegistrations = []; 
+        var allRegistrationsUnsubscribe = null; 
         const adminSearchInput = document.getElementById('admin-search');
         const adminSortSelect = document.getElementById('admin-sort');
 
         function loadAdminPanelData() {
-            // Limpar listeners antigos se existirem
-            if (allRegistrationsUnsubscribe) {
-                allRegistrationsUnsubscribe();
-            }
-
+            if (allRegistrationsUnsubscribe) allRegistrationsUnsubscribe();
             const registrationsCol = collection(db, INSCRICOES_COLLECTION);
             
-            // Listener para TODAS as inscrições
             allRegistrationsUnsubscribe = onSnapshot(registrationsCol, (snapshot) => {
-                allRegistrations = []; // Limpar cache
+                allRegistrations = []; 
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    const docId = doc.id;
-                    allRegistrations.push({ id: docId, ...data });
+                    // Normalização de idade se vier como string
+                    if(data.idade && typeof data.idade === 'string') data.idade = parseInt(data.idade);
+                    allRegistrations.push({ id: doc.id, ...data });
                 });
-                // ATUALIZA O STATUS DO RELATÓRIO
                 document.getElementById('report-data-status').textContent = `${allRegistrations.length} registros carregados.`;
                 renderAdminLists();
             }, (error) => {
-                console.error("Erro ao carregar inscrições: Permissão de Leitura (READ) negada.", error);
-                // ATUALIZA O STATUS DO RELATÓRIO
-                document.getElementById('report-data-status').textContent = 'Erro ao carregar dados. Verifique as permissões.';
-                pendingList.innerHTML = `<p class="text-red-500 font-bold">Erro ao carregar dados. Verifique as Regras de Segurança do Firebase para a permissão de leitura (READ) do administrador (request.auth != null) na coleção "${INSCRICOES_COLLECTION}".</p>`;
+                document.getElementById('report-data-status').textContent = 'Erro ao carregar dados.';
+                pendingList.innerHTML = `<p class="text-red-500 font-bold">Erro de permissão.</p>`;
             });
         }
 
@@ -1221,28 +1171,20 @@
                     const d = new Date(val);
                     return isNaN(d.getTime()) ? null : d;
                 }
-                if (typeof val === 'object') {
-                    if (typeof val.toDate === 'function') {
-                        const d = val.toDate();
-                        return d instanceof Date ? d : null;
-                    }
-                    if ('seconds' in val && 'nanoseconds' in val) {
-                        return new Date(val.seconds * 1000 + Math.floor(val.nanoseconds / 1e6));
-                    }
+                if (typeof val === 'object' && val.seconds) {
+                    return new Date(val.seconds * 1000 + Math.floor(val.nanoseconds / 1e6));
                 }
                 return null;
-            } catch(e) {
-                return null;
-            }
+            } catch(e) { return null; }
         }
 
         function renderAdminLists() {
             const q = (adminSearchInput?.value || '').toLowerCase().trim();
             const sort = adminSortSelect?.value || 'date_desc';
 
-            var pending = []; // Usando 'var'
-            var rejected = []; // Usando 'var'
-            var all_participants = []; // Nova lista. Usando 'var'
+            var pending = []; 
+            var rejected = []; 
+            var all_participants = []; 
 
             const matchesQuery = (d) => {
                 if (!q) return true;
@@ -1261,84 +1203,52 @@
             sorted.forEach(({id, ...data}) => {
                 if (!matchesQuery(data)) return;
 
-                // Definir cor e texto do status
-                var statusClass = 'text-yellow-600 bg-yellow-100'; // Usando 'var'
-                var statusText = 'Pendente'; // Usando 'var'
-                if (data.status === 'approved') {
-                    statusClass = 'text-green-600 bg-green-100';
-                    statusText = 'Aprovado';
-                } else if (data.status === 'rejected') {
-                    statusClass = 'text-red-600 bg-red-100';
-                    statusText = 'Rejeitado';
-                }
+                var statusClass = 'text-yellow-600 bg-yellow-100'; 
+                var statusText = 'Pendente'; 
+                if (data.status === 'approved') { statusClass = 'text-green-600 bg-green-100'; statusText = 'Aprovado'; } 
+                else if (data.status === 'rejected') { statusClass = 'text-red-600 bg-red-100'; statusText = 'Rejeitado'; }
 
-                // Card para a lista PENDENTE/REJEITADA (como antes)
                 const cardHtmlSimple = `
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm border">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
                         <div>
                             <p class="font-bold text-lg">${data.nome || 'Nome não informado'}</p>
-                            <p class="text-sm text-gray-600">${data.email || data.cpf || 'Sem identificador'}</p>
-                    <p class="text-xs text-gray-500">Enviado em: ${(()=>{const d=toDate(data.createdAt);return d? d.toLocaleDateString('pt-BR'): 'N/A';})()}</p>
+                            <p class="text-sm text-gray-600">${data.cidade || ''} - ${data.bairro || ''}</p>
+                            <p class="text-xs text-gray-500">Enviado em: ${(()=>{const d=toDate(data.createdAt);return d? d.toLocaleDateString('pt-BR'): 'N/A';})()}</p>
                         </div>
-                        <div class="flex gap-2">
-                            <button data-id="${id}" class="view-btn btn-zumba-secondary text-sm !px-3 !py-1">Ver/Editar</button>
+                        <div class="flex flex-col md:flex-row gap-2">
+                            <button data-id="${id}" class="view-btn btn-zumba-secondary text-sm !px-3 !py-1">Ver</button>
                             ${data.status === 'pending' ? `<button data-id="${id}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Aprovar</button>` : ''}
                             ${data.status !== 'rejected' ? `<button data-id="${id}" class="reject-btn btn-zumba text-sm !px-3 !py-1">Rejeitar</button>` : ''}
-                            ${data.status === 'rejected' ? `<button data-id="${id}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Re-Aprovar</button>` : ''}
                         </div>
                     </div>
                 `;
                 
-                // Card para a lista GERAL (com status visível)
                 const cardHtmlGestao = `
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-sm border">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <p class="font-bold text-lg">${data.nome || 'Nome não informado'}</p>
-                                <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${statusClass}">${statusText}</span>
+                    <div class="flex items-center justify-between p-3 bg-white rounded border border-gray-100 hover:bg-gray-50">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-10 rounded ${data.status==='approved'?'bg-green-400':(data.status==='rejected'?'bg-red-400':'bg-yellow-400')}"></div>
+                            <div>
+                                <p class="font-semibold text-gray-800">${data.nome || 'Sem Nome'}</p>
+                                <p class="text-xs text-gray-500">${data.cpf || 'CPF N/A'} • ${data.camisa || '?'} • ${data.sexo || '?'}</p>
                             </div>
-                            <p class="text-sm text-gray-600">${data.cpf || data.rg || 'Sem documento'}</p>
-                            <p class="text-xs text-gray-500">Enviado em: ${(()=>{const d=toDate(data.createdAt);return d? d.toLocaleDateString('pt-BR'): 'N/A';})()}</p>
                         </div>
-                        <div class="flex gap-2">
-                            <button data-id="${id}" class="view-btn btn-zumba-secondary text-sm !px-3 !py-1">Ver/Editar</button>
-                            ${data.status === 'pending' ? `<button data-id="${id}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Aprovar</button>` : ''}
-                            ${data.status !== 'rejected' ? `<button data-id="${id}" class="reject-btn btn-zumba text-sm !px-3 !py-1">Rejeitar</button>` : ''}
-                            ${data.status === 'rejected' ? `<button data-id="${id}" class="approve-btn btn-zumba-alt text-sm !px-3 !py-1">Re-Aprovar</button>` : ''}
-                        </div>
+                        <button data-id="${id}" class="view-btn text-pink-600 hover:text-pink-800 font-medium text-sm">Editar</button>
                     </div>
                 `;
 
                 if (data.status === 'pending') pending.push(cardHtmlSimple);
                 else if (data.status === 'rejected') rejected.push(cardHtmlSimple);
-                
-                all_participants.push(cardHtmlGestao); // Adiciona todos na lista de gestão
+                all_participants.push(cardHtmlGestao); 
             });
 
-            if (pending.length) {
-                pendingList.innerHTML = pending.join('');
-                noPendingMsg.classList.add('hidden-section');
-            } else {
-                pendingList.innerHTML = '';
-                noPendingMsg.classList.remove('hidden-section');
-            }
+            if (pending.length) { pendingList.innerHTML = pending.join(''); noPendingMsg.classList.add('hidden-section'); } 
+            else { pendingList.innerHTML = ''; noPendingMsg.classList.remove('hidden-section'); }
 
-            if (rejected.length) {
-                rejectedList.innerHTML = rejected.join('');
-                noRejectedMsg.classList.add('hidden-section');
-            } else {
-                rejectedList.innerHTML = '';
-                noRejectedMsg.classList.remove('hidden-section');
-            }
+            if (rejected.length) { rejectedList.innerHTML = rejected.join(''); noRejectedMsg.classList.add('hidden-section'); } 
+            else { rejectedList.innerHTML = ''; noRejectedMsg.classList.remove('hidden-section'); }
             
-            // Popula a nova lista de Gestão
-            if (all_participants.length) {
-                allParticipantsList.innerHTML = all_participants.join('');
-                noParticipantsMsg.classList.add('hidden-section');
-            } else {
-                allParticipantsList.innerHTML = '';
-                noParticipantsMsg.classList.remove('hidden-section');
-            }
+            if (all_participants.length) { allParticipantsList.innerHTML = all_participants.join(''); noParticipantsMsg.classList.add('hidden-section'); } 
+            else { allParticipantsList.innerHTML = ''; noParticipantsMsg.classList.remove('hidden-section'); }
 
             if (adminStats) {
                 const total = allRegistrations.length;
@@ -1346,29 +1256,17 @@
                 const pendingCount = allRegistrations.filter(x=>x.status!=='approved' && x.status!=='rejected').length;
                 const rejectedCount = allRegistrations.filter(x=>x.status==='rejected').length;
                 adminStats.innerHTML = `
-                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border">
-                        <div>
-                            <p class="text-sm text-gray-500">Total</p>
-                            <p class="text-2xl font-bold">${total}</p>
-                        </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border-l-4 border-blue-500">
+                        <div><p class="text-sm text-gray-500">Total</p><p class="text-2xl font-bold">${total}</p></div>
                     </div>
-                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border">
-                        <div>
-                            <p class="text-sm text-gray-500">Aprovados</p>
-                            <p class="text-2xl font-bold text-green-600">${approved}</p>
-                        </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border-l-4 border-green-500">
+                        <div><p class="text-sm text-gray-500">Aprovados</p><p class="text-2xl font-bold text-green-600">${approved}</p></div>
                     </div>
-                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border">
-                        <div>
-                            <p class="text-sm text-gray-500">Pendentes</p>
-                            <p class="text-2xl font-bold text-yellow-600">${pendingCount}</p>
-                        </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border-l-4 border-yellow-500">
+                        <div><p class="text-sm text-gray-500">Pendentes</p><p class="text-2xl font-bold text-yellow-600">${pendingCount}</p></div>
                     </div>
-                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border">
-                        <div>
-                            <p class="text-sm text-gray-500">Rejeitados</p>
-                            <p class="text-2xl font-bold text-red-600">${rejectedCount}</p>
-                        </div>
+                    <div class="p-4 bg-white rounded-lg shadow flex items-center justify-between border-l-4 border-red-500">
+                        <div><p class="text-sm text-gray-500">Rejeitados</p><p class="text-2xl font-bold text-red-600">${rejectedCount}</p></div>
                     </div>
                 `;
             }
@@ -1377,160 +1275,83 @@
         adminSearchInput?.addEventListener('input', renderAdminLists);
         adminSortSelect?.addEventListener('change', renderAdminLists);
         
-        // Ações dos botões (Aprovar, Rejeitar, Ver)
         document.addEventListener('click', async (e) => {
             const target = e.target;
             const docId = target.dataset.id;
-            
             if (!docId) return;
 
-             // Usar modal customizado ao invés de alert/confirm
             const showMessage = (msg, isError = false) => {
-                // Mensagem no Modal
                 if (detailsModal.style.display === 'flex') {
                     modalMessage.textContent = msg;
                     modalMessage.className = `mt-2 text-sm text-center ${isError ? 'text-red-500' : 'text-green-600'}`;
                     setTimeout(() => modalMessage.textContent = '', 3000);
-                } else {
-                    // Substituir alert() simples
-                    console.log(msg);
-                }
+                } else { console.log(msg); }
             };
 
-            // Aprovar
             if (target.classList.contains('approve-btn')) {
-                // Substituir confirm()
-                if (window.confirm('Tem certeza que deseja APROVAR esta inscrição?')) {
-                    try {
-                        const docRef = doc(db, INSCRICOES_COLLECTION, docId);
-                        await updateDoc(docRef, { status: "approved" });
-                        console.log("Inscrição aprovada:", docId);
-                        showMessage("Inscrição APROVADA.");
-                    } catch (error) {
-                        console.error("Erro ao aprovar:", error);
-                        showMessage("Erro ao aprovar.", true);
-                    }
+                if (window.confirm('Aprovar inscrição?')) {
+                    try { await updateDoc(doc(db, INSCRICOES_COLLECTION, docId), { status: "approved" }); } catch (error) { showMessage("Erro ao aprovar.", true); }
                 }
             }
 
-            // Rejeitar
             if (target.classList.contains('reject-btn')) {
-                 // Substituir confirm()
-                 if (window.confirm('Tem certeza que deseja REJEITAR esta inscrição?')) {
-                    try {
-                        const docRef = doc(db, INSCRICOES_COLLECTION, docId);
-                        // const snap = await getDoc(docRef); // Não precisamos mais buscar dados de storage
-                        // const data = snap.data() || {}; // Não precisamos mais
-                        await updateDoc(docRef, { status: "rejected" });
-                        
-                        // Lógica de deletar arquivos (Storage) removida
-                        
-                        console.log("Inscrição rejeitada:", docId);
-                        showMessage("Inscrição REJEITADA.", true);
-                    } catch (error) {
-                        console.error("Erro ao rejeitar:", error);
-                        showMessage("Erro ao rejeitar.", true);
-                    }
+                 if (window.confirm('Rejeitar inscrição?')) {
+                    try { await updateDoc(doc(db, INSCRICOES_COLLECTION, docId), { status: "rejected" }); } catch (error) { showMessage("Erro ao rejeitar.", true); }
                 }
             }
             
-            // Ver/Editar
-            if (target.classList.contains('view-btn')) {
-                openDetailsModal(docId);
-            }
+            if (target.classList.contains('view-btn')) { openDetailsModal(docId); }
         });
 
         // =================================================
-        // Lógica do Modal de Edição
+        // Edição
         // =================================================
         
-        var currentEditingDocId = null; // Usando 'var'
+        var currentEditingDocId = null; 
 
         async function openDetailsModal(docId) {
             currentEditingDocId = docId;
             modalMessage.textContent = '';
             
             try {
-                const docRef = doc(db, INSCRICOES_COLLECTION, docId);
-                const docSnap = await getDoc(docRef);
-
-                if (!docSnap.exists()) {
-                    console.error("Documento não encontrado");
-                    // Substituir alert()
-                    window.alert("Documento não encontrado.");
-                    return;
-                }
-
+                const docSnap = await getDoc(doc(db, INSCRICOES_COLLECTION, docId));
+                if (!docSnap.exists()) return;
                 const data = docSnap.data();
                 
-                // Preencher o formulário de edição
                 document.getElementById('edit-doc-id').value = docId;
-                // Preenchimento de foto e rg removido
                 document.getElementById('edit-nome-display').textContent = data.nome || "Sem nome";
                 document.getElementById('edit-status').value = data.status || 'pending';
 
-                // Preencher todos os inputs
                 Object.keys(data).forEach(key => {
                     const el = document.getElementById(`edit-${key}`);
-                    if (el) {
-                        if (el.type === 'radio') {
-                           // Handled by radio group
-                        } else {
-                            el.value = data[key];
-                        }
-                    }
+                    if (el && el.type !== 'radio') el.value = data[key];
                 });
                 
-                // Preencher Radio (Sexo)
-                document.querySelectorAll(`input[name="edit-sexo"]`).forEach(radio => {
-                    radio.checked = (radio.value === data.sexo);
-                });
-                
-                // Preencher Radio (Camisa)
+                document.querySelectorAll(`input[name="edit-sexo"]`).forEach(radio => { radio.checked = (radio.value === data.sexo); });
                 const camisaRadio = document.querySelector(`input[name="edit-camisa"][value="${data.camisa}"]`);
                 if (camisaRadio) {
-                    camisaRadio.checked = true;
-                    document.getElementById('edit-camisaOutro').value = '';
+                    camisaRadio.checked = true; document.getElementById('edit-camisaOutro').value = '';
                 } else if (data.camisa) {
-                    // É "Outro"
                     const outroRadio = document.querySelector(`input[name="edit-camisa"][value="Outro"]`);
-                    if(outroRadio) outroRadio.checked = true;
-                    document.getElementById('edit-camisaOutro').value = data.camisa;
+                    if(outroRadio) outroRadio.checked = true; document.getElementById('edit-camisaOutro').value = data.camisa;
                 }
                 
-                // Preencher campos Sim/Não com "Qual"
                  ['alergias', 'cirurgiaRecente', 'tratamentoMedico', 'tomaMedicamento', 'problemaOrtopedico'].forEach(key => {
                       const elSelect = document.getElementById(`edit-${key}`);
                      const elQual = document.getElementById(`edit-${key}Qual`);
                      const value = data[key] || "Não";
-                     
                      if (value.startsWith('Sim')) {
                          elSelect.value = 'Sim';
-                         const qualMatch = value.match(/\(([^)]+)\)/); // Pega texto dentro de ( )
-                         if (qualMatch && qualMatch[1] !== 'N/A') {
-                             elQual.value = qualMatch[1];
-                         } else {
-                             elQual.value = '';
-                         }
-                     } else {
-                         elSelect.value = 'Não';
-                         elQual.value = '';
-                     }
+                         const qualMatch = value.match(/\(([^)]+)\)/);
+                         if (qualMatch && qualMatch[1] !== 'N/A') elQual.value = qualMatch[1]; else elQual.value = '';
+                     } else { elSelect.value = 'Não'; elQual.value = ''; }
                  });
 
                 calculateAgeFor('edit-dataNascimento','edit-idade');
-
-
-                // Mostrar o modal (Ajustado para display:none/flex)
                 detailsModal.style.display = 'flex';
-                // Timeout para permitir a transição de opacidade
                 setTimeout(() => detailsModal.style.opacity = 1, 10); 
 
-            } catch (error) {
-                console.error("Erro ao abrir modal:", error);
-                // Substituir alert()
-                window.alert("Erro ao carregar dados para edição.");
-            }
+            } catch (error) { window.alert("Erro ao carregar dados."); }
         }
 
         closeModalBtn.addEventListener('click', () => {
@@ -1539,125 +1360,122 @@
             currentEditingDocId = null;
         });
         
-        // Salvar alterações do Modal
         modalSaveBtn.addEventListener('click', async () => {
             if (!currentEditingDocId) return;
-            
             modalMessage.textContent = 'Salvando...';
-            
             try {
-                // Coletar todos os dados do formulário de edição
-                var formData = getAllFormData('edit-form'); // Usando 'var'
-                
-                // O status vem do select 'edit-status'
+                var formData = getAllFormData('edit-form'); 
                 formData.status = document.getElementById('edit-status').value;
-                
-                // Remover campos que não devem ser atualizados
                 delete formData['doc-id']; 
+                if(formData.idade) formData.idade = parseInt(formData.idade);
                 
-                const docRef = doc(db, INSCRICOES_COLLECTION, currentEditingDocId);
-                await updateDoc(docRef, formData);
+                await updateDoc(doc(db, INSCRICOES_COLLECTION, currentEditingDocId), formData);
                 
                 modalMessage.textContent = 'Salvo com sucesso!';
                 modalMessage.className = 'mt-2 text-sm text-center text-green-600';
-                
-                setTimeout(() => {
-                    closeModalBtn.click();
-                }, 1000);
-
-            } catch (error) {
-                console.error("Erro ao salvar alterações:", error);
-                modalMessage.textContent = 'Erro ao salvar.';
-                modalMessage.className = 'mt-2 text-sm text-center text-red-500';
-            }
+                setTimeout(() => closeModalBtn.click(), 1000);
+            } catch (error) { modalMessage.textContent = 'Erro ao salvar.'; modalMessage.className = 'mt-2 text-sm text-center text-red-500'; }
         });
         
-        // Deletar inscrição (pelo modal)
         modalDeleteBtn.addEventListener('click', async () => {
             if (!currentEditingDocId) return;
-            
-            // Substituir confirm()
-            if (!window.confirm('TEM CERTEZA? Esta ação é irreversível e irá deletar o cadastro permanentemente.')) {
-                return;
-            }
-            
+            if (!window.confirm('Deletar cadastro permanentemente?')) return;
             modalMessage.textContent = 'Deletando...';
-            
             try {
-                const docRef = doc(db, INSCRICOES_COLLECTION, currentEditingDocId);
-                // const snap = await getDoc(docRef); // Não precisamos mais
-                // const data = snap.data() || {}; // Não precisamos mais
-                
-                // Lógica de deletar arquivos (Storage) removida
-                
-                await deleteDoc(docRef);
-                
-                modalMessage.textContent = 'Deletado com sucesso!';
-                setTimeout(() => {
-                    closeModalBtn.click();
-                }, 1000);
-
-            } catch (error) {
-                console.error("Erro ao deletar:", error);
-                modalMessage.textContent = 'Erro ao deletar.';
-                modalMessage.className = 'mt-2 text-sm text-center text-red-500';
-            }
+                await deleteDoc(doc(db, INSCRICOES_COLLECTION, currentEditingDocId));
+                setTimeout(() => closeModalBtn.click(), 500);
+            } catch (error) { modalMessage.textContent = 'Erro ao deletar.'; }
         });
 
 
         // =================================================
-        // Lógica do Gerador de Relatórios
+        // Gerador de Relatórios INTELIGENTE
         // =================================================
+        
+        // Botão de Limpar Filtros
+        clearFiltersBtn.addEventListener('click', () => {
+            statusFilter.value = 'approved';
+            dateStartInput.value = '';
+            dateEndInput.value = '';
+            cityFilterInput.value = '';
+            bairroFilterInput.value = '';
+            camisaFilterInput.value = 'all';
+            sexoFilterInput.value = 'all';
+            ageMinInput.value = '';
+            ageMaxInput.value = '';
+            
+            // Opcional: Desmarcar checkboxes ou resetar para padrão
+            reportFields.querySelectorAll('input').forEach(cb => cb.checked = true);
+            
+            // Ocultar resultados
+            reportResultsContainer.classList.add('hidden-section');
+        });
 
         generateReportBtn.addEventListener('click', () => {
-            var selectedFields = []; // Usando 'var'
-            reportFields.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-                selectedFields.push(cb.value);
-            });
+            var selectedFields = []; 
+            reportFields.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => selectedFields.push(cb.value));
 
-            if (selectedFields.length === 0) {
-                // Substituir alert()
-                window.alert("Por favor, selecione pelo menos um campo para o relatório.");
-                return;
-            }
+            if (selectedFields.length === 0) { window.alert("Selecione pelo menos um campo para exibir."); return; }
 
-            // Filtros
+            // 1. Coleta Filtros
             const status = statusFilter.value;
             const startDateStr = dateStartInput.value;
             const endDateStr = dateEndInput.value;
             const cityFilter = (cityFilterInput.value || '').trim().toLowerCase();
-            const ufFilter = (ufFilterInput?.value || '').trim().toUpperCase();
+            const bairroFilter = (bairroFilterInput.value || '').trim().toLowerCase();
+            const camisaFilter = camisaFilterInput.value;
+            const sexoFilter = sexoFilterInput.value;
+            const ageMin = ageMinInput.value ? parseInt(ageMinInput.value) : null;
+            const ageMax = ageMaxInput.value ? parseInt(ageMaxInput.value) : null;
 
-            var filteredUsers = allRegistrations.slice(); // Usando 'var'
-            if (status !== 'all') {
-                filteredUsers = filteredUsers.filter(u => (u.status || 'pending') === status);
-            }
+            // 2. Aplica Filtros
+            var filteredUsers = allRegistrations.slice(); 
+            
+            // Filtro Status
+            if (status !== 'all') filteredUsers = filteredUsers.filter(u => (u.status || 'pending') === status);
+            
+            // Filtro Datas
             if (startDateStr) {
                 const start = new Date(startDateStr);
                 filteredUsers = filteredUsers.filter(u => { const d = toDate(u.createdAt); return d ? d >= start : false; });
             }
             if (endDateStr) {
-                const end = new Date(endDateStr);
-                // incluir dia inteiro
-                end.setHours(23,59,59,999);
+                const end = new Date(endDateStr); end.setHours(23,59,59,999);
                 filteredUsers = filteredUsers.filter(u => { const d = toDate(u.createdAt); return d ? d <= end : false; });
             }
-            if (cityFilter) {
-                filteredUsers = filteredUsers.filter(u => (u.cidade || '').toLowerCase().includes(cityFilter));
+            
+            // Filtros de Texto (Cidade, Bairro)
+            if (cityFilter) filteredUsers = filteredUsers.filter(u => (u.cidade || '').toLowerCase().includes(cityFilter));
+            if (bairroFilter) filteredUsers = filteredUsers.filter(u => (u.bairro || '').toLowerCase().includes(bairroFilter));
+            
+            // Filtros Exatos (Camisa, Sexo)
+            if (camisaFilter !== 'all') {
+                filteredUsers = filteredUsers.filter(u => (u.camisa === camisaFilter) || (camisaFilter === 'Outro' && u.camisa && !['PP','P','M','G','GG'].includes(u.camisa)));
             }
-            if (ufFilter) {
-                filteredUsers = filteredUsers.filter(u => (u.uf || '').toUpperCase() === ufFilter);
+            if (sexoFilter !== 'all') {
+                filteredUsers = filteredUsers.filter(u => u.sexo === sexoFilter);
             }
+            
+            // Filtro Numérico (Idade)
+            if (ageMin !== null) filteredUsers = filteredUsers.filter(u => (u.idade !== undefined && u.idade >= ageMin));
+            if (ageMax !== null) filteredUsers = filteredUsers.filter(u => (u.idade !== undefined && u.idade <= ageMax));
 
+
+            // 3. Geração de Estatísticas (Dashboard Rápido)
+            updateReportSummary(filteredUsers);
+            
+            // 4. Renderização da Tabela
+            document.getElementById('results-count').textContent = `Encontrados: ${filteredUsers.length} registros`;
+            
             if (filteredUsers.length === 0) {
                 reportResultsContainer.classList.remove('hidden-section');
                 reportTableHead.innerHTML = '';
-                reportTableBody.innerHTML = '<tr><td class="p-4" colspan="100%">Nenhum registro encontrado para os filtros selecionados.</td></tr>';
+                reportTableBody.innerHTML = '<tr><td class="p-4 text-center text-gray-500" colspan="100%">Nenhum registro encontrado para os filtros selecionados.</td></tr>';
                 return;
             }
 
-            // Gerar Cabeçalho da Tabela
-            var headHtml = '<tr>'; // Usando 'var'
+            // Cabeçalho
+            var headHtml = '<tr>'; 
             selectedFields.forEach(field => {
                 const label = reportFields.querySelector(`input[value="${field}"]`).parentElement.textContent;
                 headHtml += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${label.trim()}</th>`;
@@ -1665,14 +1483,18 @@
             headHtml += '</tr>';
             reportTableHead.innerHTML = headHtml;
 
-            // Gerar Corpo da Tabela
-            var bodyHtml = ''; // Usando 'var'
-            var rows = []; // Usando 'var'
+            // Corpo
+            var bodyHtml = ''; 
+            var rows = []; 
             filteredUsers.forEach(user => {
-                bodyHtml += '<tr>';
-                var row = []; // Array para exportação. Usando 'var'
+                bodyHtml += '<tr class="hover:bg-gray-50">';
+                var row = []; 
                 selectedFields.forEach(field => {
-                    const value = field === 'createdAt' ? (toDate(user.createdAt)?.toLocaleString('pt-BR') || 'N/A') : (user[field] || 'N/A');
+                    let value = user[field] || '-';
+                    if (field === 'createdAt') value = toDate(user.createdAt)?.toLocaleString('pt-BR') || '-';
+                    if (field === 'status') {
+                        value = value === 'approved' ? 'Aprovado' : (value === 'rejected' ? 'Rejeitado' : 'Pendente');
+                    }
                     bodyHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${value}</td>`;
                     row.push(value);
                 });
@@ -1683,78 +1505,81 @@
 
             reportResultsContainer.classList.remove('hidden-section');
 
-            // Guardar dados para exportação
-            var headers = []; // Usando 'var'
+            var headers = []; 
             reportTableHead.querySelectorAll('th').forEach(th => headers.push(th.textContent));
             lastReportData = { headers, rows: rows };
         });
         
-        // Exportar para CSV
-        exportCsvBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
-            const table = document.getElementById('report-table');
-            var csv = []; // Usando 'var'
+        function updateReportSummary(users) {
+            // Totais
+            document.getElementById('summary-total').textContent = users.length;
             
-            // Cabeçalho
-            var headers = []; // Usando 'var'
-            table.querySelectorAll('thead th').forEach(th => headers.push(`"${th.textContent}"`));
-            csv.push(headers.join(','));
-            
-            // Linhas
-            lastReportData.rows.forEach(row => {
-                 // Certifique-se de que cada valor é envolto em aspas e faz o escape de aspas internas
-                const rowData = row.map(v => `"${String(v).replace(/"/g, '""')}"`);
-                csv.push(rowData.join(','));
+            // Contagem de Camisas
+            const camisasCount = {};
+            users.forEach(u => {
+                const c = u.camisa || 'Não Inf.';
+                camisasCount[c] = (camisasCount[c] || 0) + 1;
             });
-
-
-            const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
-            const encodedUri = encodeURI(csvContent);
+            
+            // Ordenar camisas logicamente
+            const order = ['PP', 'P', 'M', 'G', 'GG', 'Outro', 'Não Inf.'];
+            let camisasHtml = '';
+            order.forEach(size => {
+                if (camisasCount[size]) {
+                    camisasHtml += `<li><b>${size}:</b> ${camisasCount[size]}</li>`;
+                }
+            });
+            // Adicionar os que não estão na ordem padrão
+            Object.keys(camisasCount).forEach(k => {
+                if (!order.includes(k) && !['Outro', 'Não Inf.'].includes(k)) {
+                     camisasHtml += `<li><b>${k}:</b> ${camisasCount[k]}</li>`;
+                }
+            });
+            document.getElementById('summary-camisas').innerHTML = camisasHtml || '<li>Nenhuma camisa registrada</li>';
+            
+            // Contagem de Sexo
+            const masc = users.filter(u => u.sexo === 'Masculino').length;
+            const fem = users.filter(u => u.sexo === 'Feminino').length;
+            document.getElementById('summary-sexo').textContent = `Masc: ${masc} | Fem: ${fem}`;
+        }
+        
+        // Exportações
+        exportCsvBtn.addEventListener('click', () => {
+            if (!lastReportData.headers.length) return;
+            var csv = []; 
+            csv.push(lastReportData.headers.map(h => `"${h}"`).join(','));
+            lastReportData.rows.forEach(row => { csv.push(row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')); });
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv.join("\n")));
             link.setAttribute("download", "relatorio_zumba.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         });
 
-        // Exportar para XLSX
         exportXlsxBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
-            const aoa = [ lastReportData.headers, ...lastReportData.rows ];
-            const ws = XLSX.utils.aoa_to_sheet(aoa);
+            if (!lastReportData.headers.length) return;
+            const ws = XLSX.utils.aoa_to_sheet([lastReportData.headers, ...lastReportData.rows]);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Relatorio');
             XLSX.writeFile(wb, 'relatorio_zumba.xlsx');
         });
 
-        // Exportar para PDF
         exportPdfBtn.addEventListener('click', () => {
-            if (!lastReportData.headers.length) { window.alert('Gere o relatório antes de exportar.'); return; }
+            if (!lastReportData.headers.length) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
-            const title = 'Relatório Projeto Zumba';
-            const date = new Date().toLocaleString('pt-BR');
-            doc.setFontSize(16);
-            doc.text(title, 14, 15);
-            doc.setFontSize(10);
-            doc.text(`Gerado em ${date}`, 14, 22);
+            doc.text('Relatório Projeto Zumba', 14, 15);
+            doc.setFontSize(10); doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, 14, 22);
             doc.autoTable({
                 head: [ lastReportData.headers ],
                 body: lastReportData.rows,
                 startY: 28,
-                styles: { fontSize: 9 },
+                styles: { fontSize: 8 },
                 headStyles: { fillColor: [236, 72, 153] },
             });
             doc.save('relatorio_zumba.pdf');
         });
         
-        
-        // Inicializar ícones
-        // Lucide precisa ser criado manualmente
-        if (window.lucide) {
-            lucide.createIcons();
-        }
+        if (window.lucide) lucide.createIcons();
 
     </script>
 </body>
