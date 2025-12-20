@@ -371,14 +371,7 @@
                             </nav>
                         </div>
 
-                        <div class="mt-6">
-                            <div class="text-xs font-bold text-gray-500 uppercase mb-2">Polos / Locais</div>
-                            <nav class="space-y-1">
-                                <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-pink-50 text-gray-700 sidebar-link" data-section="tab-polos-manage">
-                                    <i data-lucide="map-pin" class="w-4 h-4"></i> Gerenciar Polos
-                                </button>
-                            </nav>
-                        </div>
+
 
                         <div class="mt-6">
                             <div class="text-xs font-bold text-gray-500 uppercase mb-2">Relatórios</div>
@@ -444,42 +437,72 @@
 
                 <!-- GRÁFICOS (NOVA ABA) -->
                 <div id="tab-charts" class="admin-tab-content hidden-section space-y-6">
-                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm mb-4">
-                        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                            <i data-lucide="pie-chart" class="w-6 h-6 text-pink-600"></i> Relatórios Gráficos
-                        </h2>
-                        <p class="text-gray-500 text-sm">Visualização visual dos dados do projeto.</p>
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                                <i data-lucide="pie-chart" class="w-8 h-8 text-pink-600"></i> Relatórios Visuais
+                            </h2>
+                            <p class="text-gray-500">Análise detalhada dos dados do projeto.</p>
+                        </div>
+                        <div class="bg-pink-50 px-6 py-3 rounded-lg border border-pink-100 text-center">
+                            <span class="block text-xs font-bold text-pink-600 uppercase tracking-wider">Total de Inscritos</span>
+                            <span class="text-3xl font-black text-gray-800" id="charts-total-display">...</span>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Polo Chart -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                            <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-pink-600"></i> Distribuição por Polo</h3>
-                            <div class="h-64 relative">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-700">Distribuição por Polo</h3>
+                                    <p class="text-xs text-gray-400">Onde estão nossos alunos?</p>
+                                </div>
+                                <div class="p-2 bg-pink-100 rounded text-pink-600"><i data-lucide="map-pin" class="w-5 h-5"></i></div>
+                            </div>
+                            <div class="h-72 relative">
                                 <canvas id="chart-polos"></canvas>
                             </div>
                         </div>
                         
                         <!-- Bairro Chart -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                            <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2"><i data-lucide="home" class="w-4 h-4 text-blue-600"></i> Top 10 Bairros</h3>
-                            <div class="h-64 relative">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                             <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-700">Top 10 Bairros</h3>
+                                    <p class="text-xs text-gray-400">Concentração residencial</p>
+                                </div>
+                                <div class="p-2 bg-blue-100 rounded text-blue-600"><i data-lucide="home" class="w-5 h-5"></i></div>
+                            </div>
+                            <div class="h-72 relative">
                                 <canvas id="chart-bairros"></canvas>
                             </div>
                         </div>
                         
                         <!-- Idade Chart -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                            <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-green-600"></i> Faixa Etária</h3>
-                            <div class="h-64 relative">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                             <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-700">Faixa Etária</h3>
+                                    <p class="text-xs text-gray-400">Perfil demográfico por idade</p>
+                                </div>
+                                <div class="p-2 bg-green-100 rounded text-green-600"><i data-lucide="user" class="w-5 h-5"></i></div>
+                            </div>
+                            <div class="h-72 relative">
                                 <canvas id="chart-idade"></canvas>
                             </div>
                         </div>
                         
                         <!-- Doenças Chart -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                            <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-red-600"></i> Saúde e Condições</h3>
-                            <div class="h-64 relative">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                             <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-700">Saúde e Condições</h3>
+                                    <p class="text-xs text-gray-400">Indicadores de atenção</p>
+                                </div>
+                                <div class="p-2 bg-red-100 rounded text-red-600"><i data-lucide="activity" class="w-5 h-5"></i></div>
+                            </div>
+                            <div class="h-72 relative">
                                 <canvas id="chart-saude"></canvas>
                             </div>
                         </div>
@@ -699,22 +722,7 @@
                     </div>
                 </div>
                 
-                <!-- POLOS -->
-                <div id="tab-polos-manage" class="admin-tab-content hidden-section space-y-6">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2"><i data-lucide="map-pin" class="w-5 h-5"></i> Gerenciar Polos</h2>
-                        <p class="text-sm text-gray-600 mb-4">Adicione, edite e remova polos. Relacionado às configurações.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <input class="form-input" placeholder="Nome do Polo">
-                            <button class="btn btn-primary">Salvar</button>
-                            <button class="btn btn-secondary">Limpar</button>
-                        </div>
-                        <div class="mt-6 border rounded-lg overflow-hidden">
-                            <div class="p-4 bg-gray-50 border-b font-bold text-gray-700">Polos Cadastrados</div>
-                            <div class="p-4 text-sm text-gray-500">Integração futura com Firestore.</div>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- CONFIGURAÇÕES -->
                 <div id="tab-settings" class="admin-tab-content hidden-section">
@@ -1212,16 +1220,57 @@
                     await addDoc(collection(db, INSCRICOES_COLLECTION), data);
                 }
                 
-                msg.textContent = '✅ CADASTRO REALIZADO COM SUCESSO!';
-                msg.className = 'mt-4 text-center text-lg font-bold text-green-600';
+                // ============================================================
+                // CORREÇÃO: EXIBIÇÃO IMEDIATA DO NÚMERO
+                // ============================================================
                 
-                // Scroll to message
-                msg.scrollIntoView({ behavior: 'smooth' });
+                // 1. Atualiza o campo de input visualmente
+                const inscInput = document.getElementById('inscricao');
+                if(inscInput) {
+                    inscInput.value = data.inscricao; // O número real gerado
+                    inscInput.classList.remove('bg-gray-100', 'text-pink-600', 'border-pink-200');
+                    inscInput.classList.add('bg-green-50', 'text-green-700', 'border-green-500', 'font-extrabold');
+                }
+
+                // 2. Mensagem de Sucesso Aprimorada (Com Destaque)
+                msg.innerHTML = `
+                    <div class="p-6 bg-green-50 border-2 border-green-200 rounded-xl shadow-lg transform transition-all duration-500 scale-100">
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                                <i data-lucide="check" class="w-10 h-10 text-green-600"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-green-800">CADASTRO REALIZADO!</h3>
+                            <p class="text-gray-600">Sua vaga está garantida. Seu número é:</p>
+                            
+                            <div class="text-5xl font-black text-green-600 tracking-wider my-3 bg-white px-8 py-4 rounded-lg border-2 border-green-100 shadow-inner">
+                                ${data.inscricao}
+                            </div>
+                            
+                            <p class="text-sm text-gray-500 font-medium bg-white px-3 py-1 rounded-full border border-gray-200">
+                                📸 TIRE UM PRINT DESTA TELA AGORA
+                            </p>
+                        </div>
+                    </div>
+                `;
+                msg.className = 'mt-8';
                 
+                // 3. Atualiza ícones na mensagem injetada
+                if(window.lucide) lucide.createIcons();
+
+                // 4. Oculta botão de confirmar para evitar duplo clique e focar no número
+                btn.parentElement.classList.add('hidden-section');
+                
+                // 5. Scroll para o topo da mensagem
+                msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // 6. Aumenta tempo de reload para 15s (User Experience)
                 setTimeout(() => {
-                    if(auth.currentUser?.isAnonymous) signOut(auth);
-                    window.location.reload();
-                }, 3000);
+                    if(confirm("Você já anotou seu número? A página irá recarregar para um novo cadastro.")) {
+                         if(auth.currentUser?.isAnonymous) signOut(auth);
+                         window.location.reload();
+                    }
+                }, 5000); // Pergunta após 5s, mas não força reload imediato sem confirmação
+
 
             } catch (err) {
                 console.error(err);
@@ -1358,6 +1407,10 @@
                 return;
             }
 
+            // Global Style
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#6b7280';
+
             try {
                 const ctxPolos = document.getElementById('chart-polos');
                 const ctxBairros = document.getElementById('chart-bairros');
@@ -1365,6 +1418,11 @@
                 const ctxSaude = document.getElementById('chart-saude');
                 
                 if(!ctxPolos || !ctxBairros || !ctxIdade || !ctxSaude) return;
+
+                // Update Total Count Display
+                const totalInscritos = allData.length;
+                const totalDisplay = document.getElementById('charts-total-display');
+                if(totalDisplay) totalDisplay.textContent = totalInscritos;
 
                 // DESTROY OLD INSTANCES
                 if(chartPolosInstance) chartPolosInstance.destroy();
@@ -1412,31 +1470,35 @@
                     if((i.alergias && i.alergias.includes('SIM')) || (i.problemaOrtopedico && i.problemaOrtopedico.includes('SIM'))) saudeStats['Outros Riscos']++;
                 });
 
-                // Destroi anteriores se existirem e forem válidos
-                if(chartPolosInstance) { try { chartPolosInstance.destroy(); } catch(e){} }
-                if(chartBairrosInstance) { try { chartBairrosInstance.destroy(); } catch(e){} }
-                if(chartIdadeInstance) { try { chartIdadeInstance.destroy(); } catch(e){} }
-                if(chartSaudeInstance) { try { chartSaudeInstance.destroy(); } catch(e){} }
+                // Colors Palette
+                const pinkPalette = ['#be185d', '#db2777', '#ec4899', '#f472b6', '#fbcfe8', '#fce7f3'];
+                const bluePalette = '#3b82f6';
 
-                // CHART POLOS
+                // CHART POLOS (Doughnut)
                 chartPolosInstance = new Chart(ctxPolos, {
                     type: 'doughnut',
                     data: {
                         labels: polosLabels,
                         datasets: [{
                             data: polosValues,
-                            backgroundColor: ['#ec4899', '#f472b6', '#db2777', '#be185d', '#9d174d', '#831843', '#fbcfe8', '#f9a8d4', '#fda4af', '#e11d48'],
-                            borderWidth: 1
+                            backgroundColor: ['#831843', '#9d174d', '#be185d', '#db2777', '#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3', '#fff1f2'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                            hoverOffset: 4
                         }]
                     },
                     options: { 
                         responsive: true, 
                         maintainAspectRatio: false,
-                        plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } }
+                        plugins: { 
+                            legend: { position: 'right', labels: { boxWidth: 12, usePointStyle: true, padding: 20, font: { size: 11, weight: 'bold' } } },
+                            tooltip: { backgroundColor: '#1f2937', padding: 12, cornerRadius: 8, displayColors: true }
+                        },
+                        layout: { padding: 10 }
                     }
                 });
 
-                // CHART BAIRROS
+                // CHART BAIRROS (Bar)
                 chartBairrosInstance = new Chart(ctxBairros, {
                     type: 'bar',
                     data: {
@@ -1445,52 +1507,74 @@
                             label: 'Inscritos',
                             data: sortedBairros.map(i => i[1]),
                             backgroundColor: '#3b82f6',
-                            borderRadius: 4
+                            borderRadius: 6,
+                            barThickness: 'flex',
+                            maxBarThickness: 40
                         }]
                     },
                     options: { 
                         responsive: true, 
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 9 } } } }
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { backgroundColor: '#1f2937', padding: 12, cornerRadius: 8 }
+                        },
+                        scales: { 
+                            y: { beginAtZero: true, grid: { borderDash: [2, 4], drawBorder: false }, ticks: { precision: 0 } }, 
+                            x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 10 } } } 
+                        }
                     }
                 });
 
-                // CHART IDADE
+                // CHART IDADE (Bar)
                 chartIdadeInstance = new Chart(ctxIdade, {
                     type: 'bar',
                     data: {
                         labels: Object.keys(ageRanges),
                         datasets: [{
-                            label: 'Faixa Etária',
+                            label: 'Pessoas',
                             data: Object.values(ageRanges),
                             backgroundColor: '#10b981',
-                            borderRadius: 4
+                            borderRadius: 6,
+                            barThickness: 'flex',
+                            maxBarThickness: 50
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { backgroundColor: '#1f2937', padding: 12, cornerRadius: 8 }
+                        },
+                        scales: { 
+                            y: { beginAtZero: true, grid: { borderDash: [2, 4], drawBorder: false }, ticks: { precision: 0 } },
+                            x: { grid: { display: false } }
+                        }
                     }
                 });
 
-                // CHART SAUDE
+                // CHART SAUDE (Pie)
                 chartSaudeInstance = new Chart(ctxSaude, {
                     type: 'pie',
                     data: {
                         labels: Object.keys(saudeStats),
                         datasets: [{
                             data: Object.values(saudeStats),
-                            backgroundColor: ['#ef4444', '#3b82f6', '#f97316', '#8b5cf6'],
-                            borderWidth: 1
+                            backgroundColor: ['#ef4444', '#f59e0b', '#8b5cf6', '#64748b'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                            hoverOffset: 4
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } }
+                        plugins: { 
+                            legend: { position: 'right', labels: { boxWidth: 12, usePointStyle: true, padding: 20, font: { size: 11, weight: 'bold' } } },
+                            tooltip: { backgroundColor: '#1f2937', padding: 12, cornerRadius: 8 }
+                        },
+                        layout: { padding: 10 }
                     }
                 });
             } catch (err) {
