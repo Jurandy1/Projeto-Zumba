@@ -1232,7 +1232,7 @@
                     inscInput.classList.add('bg-green-50', 'text-green-700', 'border-green-500', 'font-extrabold');
                 }
 
-                // 2. Mensagem de Sucesso Aprimorada (Com Destaque)
+                // 2. Mensagem de Sucesso Aprimorada
                 msg.innerHTML = `
                     <div class="p-6 bg-green-50 border-2 border-green-200 rounded-xl shadow-lg transform transition-all duration-500 scale-100">
                         <div class="flex flex-col items-center gap-2">
@@ -1249,6 +1249,10 @@
                             <p class="text-sm text-gray-500 font-medium bg-white px-3 py-1 rounded-full border border-gray-200">
                                 📸 TIRE UM PRINT DESTA TELA AGORA
                             </p>
+
+                            <button id="new-registration-btn" class="mt-6 btn btn-secondary w-full py-3 font-bold text-gray-700 hover:bg-gray-100 border-2">
+                                <i data-lucide="plus-circle" class="w-5 h-5 mr-2"></i> FAZER NOVA INSCRIÇÃO
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1263,14 +1267,11 @@
                 // 5. Scroll para o topo da mensagem
                 msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
-                // 6. Aumenta tempo de reload para 15s (User Experience)
-                setTimeout(() => {
-                    if(confirm("Você já anotou seu número? A página irá recarregar para um novo cadastro.")) {
-                         if(auth.currentUser?.isAnonymous) signOut(auth);
-                         window.location.reload();
-                    }
-                }, 5000); // Pergunta após 5s, mas não força reload imediato sem confirmação
-
+                // 6. Listener para nova inscrição (em vez de reload automático com confirm)
+                document.getElementById('new-registration-btn').addEventListener('click', () => {
+                    if(auth.currentUser?.isAnonymous) signOut(auth);
+                    window.location.reload();
+                });
 
             } catch (err) {
                 console.error(err);
