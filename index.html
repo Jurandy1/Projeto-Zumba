@@ -231,6 +231,13 @@
                              <div><label class="form-label">Mora em casa própria?</label><select id="casaPropria" class="form-select"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
                              <div><label for="zona" class="form-label">Zona (Eleitoral)</label><input type="text" id="zona" class="form-input"></div>
                         </div>
+
+                        <!-- Título de Eleitor -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                            <div><label for="tituloEleitor" class="form-label">Título de Eleitor</label><input type="text" id="tituloEleitor" class="form-input" placeholder="Número do título"></div>
+                            <div><label for="secaoEleitoral" class="form-label">Seção Eleitoral</label><input type="text" id="secaoEleitoral" class="form-input" placeholder="Número da seção"></div>
+                            <div class="hidden md:block"></div>
+                        </div>
                     </div>
 
                     <div class="border-t border-gray-200 my-6"></div>
@@ -358,6 +365,9 @@
                             <nav class="space-y-1">
                                 <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-pink-50 text-gray-700 sidebar-link" data-section="tab-participants">
                                     <i data-lucide="users" class="w-4 h-4"></i> Lista Geral
+                                </button>
+                                <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-pink-50 text-gray-700 sidebar-link" data-section="tab-birthdays">
+                                    <i data-lucide="cake" class="w-4 h-4"></i> Aniversários do Mês
                                 </button>
                                 <button class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 sidebar-link" data-section="tab-participants-pending">
                                     <i data-lucide="clock" class="w-4 h-4"></i> Pendentes de Aprovação
@@ -548,6 +558,42 @@
                     <div class="p-3 border-t border-gray-200 bg-gray-50 text-xs text-gray-500 text-right font-medium" id="table-footer-count">Carregando dados...</div>
                 </div>
 
+                <!-- ANIVERSÁRIOS -->
+                <div id="tab-birthdays" class="admin-tab-content hidden-section space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="p-5 border-b border-gray-100 bg-pink-50 flex items-center justify-between">
+                            <h2 class="text-lg font-bold text-pink-800 flex items-center gap-2"><i data-lucide="cake" class="w-5 h-5"></i> Aniversários</h2>
+                            <div class="text-xs font-bold bg-pink-200 text-pink-900 px-3 py-1 rounded-full" id="birthdays-count-badge">0</div>
+                        </div>
+                        <div class="p-5 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Hoje -->
+                            <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                                <div class="p-4 border-b">
+                                    <h3 class="font-bold text-gray-700 flex items-center gap-2"><i data-lucide="sun" class="w-4 h-4 text-yellow-600"></i> Hoje</h3>
+                                    <p class="text-xs text-gray-500">Quem faz aniversário hoje.</p>
+                                </div>
+                                <div id="birthday-today" class="p-4 space-y-3 min-h-24"></div>
+                            </div>
+                            <!-- Este Mês -->
+                            <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                                <div class="p-4 border-b">
+                                    <h3 class="font-bold text-gray-700 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-blue-600"></i> Este Mês</h3>
+                                    <p class="text-xs text-gray-500">Todos aniversariantes do mês atual.</p>
+                                </div>
+                                <div id="birthday-month" class="p-4 space-y-3 min-h-24"></div>
+                            </div>
+                            <!-- Próximos 30 dias -->
+                            <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                                <div class="p-4 border-b">
+                                    <h3 class="font-bold text-gray-700 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-green-600"></i> Próximos Aniversários</h3>
+                                    <p class="text-xs text-gray-500">Quem fará aniversário nos próximos 30 dias.</p>
+                                </div>
+                                <div id="birthday-next" class="p-4 space-y-3 min-h-24"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- PARTICIPANTES: PENDENTES -->
                 <div id="tab-participants-pending" class="admin-tab-content hidden-section space-y-6">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -681,6 +727,8 @@
                                 <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-1 rounded border shadow-sm"><input type="checkbox" value="cpf" class="text-pink-600 rounded"> CPF</label>
                                 <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-1 rounded border shadow-sm"><input type="checkbox" value="inscricao" class="text-pink-600 rounded"> N° Insc.</label>
                                 <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-1 rounded border shadow-sm"><input type="checkbox" value="zona" class="text-pink-600 rounded"> Zona Eleitoral</label>
+                                <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-1 rounded border shadow-sm"><input type="checkbox" value="tituloEleitor" class="text-pink-600 rounded"> Título de Eleitor</label>
+                                <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-1 rounded border shadow-sm"><input type="checkbox" value="secaoEleitoral" class="text-pink-600 rounded"> Seção Eleitoral</label>
                                 <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-1 rounded border shadow-sm"><input type="checkbox" value="hipertenso" class="text-pink-600 rounded"> Hipertenso</label>
                                 <label class="flex items-center gap-2 cursor-pointer bg-white px-3 py-1 rounded border shadow-sm"><input type="checkbox" value="diabetico" class="text-pink-600 rounded"> Diabético</label>
                             </div>
@@ -839,6 +887,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                                <div><label class="text-xs text-gray-500 block">Título de Eleitor</label><input type="text" id="edit-tituloEleitor" class="form-input text-sm py-1"></div>
+                                <div><label class="text-xs text-gray-500 block">Seção Eleitoral</label><input type="text" id="edit-secaoEleitoral" class="form-input text-sm py-1"></div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -901,6 +953,50 @@
                 .toUpperCase()
                 .replace(/\s+/g, ' ') // Substitui múltiplos espaços por um só
                 .trim();
+        };
+
+        // Lista oficial de polos (atualizada ao carregar Configurações)
+        let officialPolos = [];
+        const setOfficialPolosFromString = (str) => {
+            officialPolos = (str || '')
+                .split(',')
+                .map(p => normalizeText(p))
+                .filter(p => p);
+        };
+
+        // Similaridade básica: distância de Levenshtein
+        const levenshtein = (a, b) => {
+            a = normalizeText(a); b = normalizeText(b);
+            const m = [];
+            for(let i=0;i<=a.length;i++){ m[i]=[i]; }
+            for(let j=1;j<=b.length;j++){ m[0][j]=j; }
+            for(let i=1;i<=a.length;i++){
+                for(let j=1;j<=b.length;j++){
+                    const cost = a[i-1] === b[j-1] ? 0 : 1;
+                    m[i][j] = Math.min(
+                        m[i-1][j] + 1,
+                        m[i][j-1] + 1,
+                        m[i-1][j-1] + cost
+                    );
+                }
+            }
+            return m[a.length][b.length];
+        };
+
+        // Mapeia um texto para o polo oficial mais próximo (tolerante a erros)
+        const mapToOfficialPolo = (text) => {
+            const n = normalizeText(text || '');
+            if(!n) return '';
+            if(officialPolos.length === 0) return n;
+            let best = null, bestScore = Infinity;
+            for(const p of officialPolos){
+                const d = levenshtein(n, p);
+                if(d < bestScore){ bestScore = d; best = p; }
+                if(d === 0){ bestScore = 0; best = p; break; }
+            }
+            // Aceita se distância pequena (2) ou se contém palavra-chave igual
+            if(best && (bestScore <= 2 || n.includes(best))) return best;
+            return n;
         };
 
         const maskCPF = (v) => {
@@ -989,6 +1085,7 @@
                 else if(id === 'tab-participants-rejected') renderStatusTable('rejected');
                 else if(id === 'tab-health-restrictions') renderHealthRisks();
                 else if(id === 'tab-comms-whatsapp') renderWhatsappDirectory();
+                else if(id === 'tab-birthdays') renderBirthdays();
             });
         });
 
@@ -1081,6 +1178,7 @@
             try {
                 const settingsDoc = await getDoc(doc(db, SETTINGS_COLLECTION, "geral"));
                 const polosStr = settingsDoc.exists() ? (settingsDoc.data().polos || "") : "";
+                setOfficialPolosFromString(polosStr);
                 
                 if (polosStr.trim().length > 0) {
                     const polos = polosStr.split(',').map(p => p.trim().toUpperCase()).filter(p => p);
@@ -1170,7 +1268,7 @@
                 }
 
                 // Normalização Extra
-                if(data.polo) data.polo = normalizeText(data.polo);
+                if(data.polo) data.polo = mapToOfficialPolo(data.polo);
                 if(data.nome) data.nome = normalizeText(data.nome);
                 
                 // Radios
@@ -1294,7 +1392,13 @@
             
             // Carrega Configs
             getDoc(doc(db, SETTINGS_COLLECTION, "geral")).then(s => {
-                if(s.exists()) document.getElementById('settings-polos').value = s.data().polos || "";
+                if(s.exists()) {
+                    const str = s.data().polos || "";
+                    document.getElementById('settings-polos').value = str;
+                    setOfficialPolosFromString(str);
+                } else {
+                    setOfficialPolosFromString("");
+                }
             });
 
             // Ouve dados em tempo real
@@ -1322,6 +1426,7 @@
                     else if(id === 'tab-participants-rejected') renderStatusTable('rejected');
                     else if(id === 'tab-health-restrictions') renderHealthRisks();
                     else if(id === 'tab-comms-whatsapp') renderWhatsappDirectory();
+                    else if(id === 'tab-birthdays') renderBirthdays();
                 }
             }, (error) => {
                 console.error("Erro de permissão ou conexão:", error);
@@ -1339,9 +1444,12 @@
             allData.forEach(i => {
                 const raw = i.polo || "SEM POLO";
                 // Normaliza antes de adicionar ao Set para garantir unicidade visual
-                const normalized = normalizeText(raw); 
+                const normalized = mapToOfficialPolo(raw); 
                 if(normalized) uniquePolos.add(normalized);
             });
+
+            // Inclui lista oficial configurada
+            officialPolos.forEach(p => uniquePolos.add(p));
             
             const sortedPolos = [...uniquePolos].sort();
             
@@ -1434,7 +1542,7 @@
                 // 1. Agregação de Polos
                 const polosCount = {};
                 allData.forEach(i => {
-                    let p = normalizeText(i.polo || 'SEM POLO');
+                    let p = mapToOfficialPolo(i.polo || 'SEM POLO');
                     if(p.includes('RADIOBAL')) p = 'RADIONAL';
                     polosCount[p] = (polosCount[p] || 0) + 1;
                 });
@@ -1581,6 +1689,107 @@
             } catch (err) {
                 console.error("Erro ao renderizar gráficos:", err);
             }
+        }
+
+        function renderBirthdays() {
+            const todayEl = document.getElementById('birthday-today');
+            const monthEl = document.getElementById('birthday-month');
+            const upcomingEl = document.getElementById('birthday-next');
+            if(!todayEl || !monthEl || !upcomingEl) return;
+
+            const now = new Date();
+            const todayDay = now.getDate();
+            const todayMonth = now.getMonth();
+
+            const parseDob = (str) => {
+                if(!str) return null;
+                // Accept formats: YYYY-MM-DD, DD/MM/YYYY
+                const s = String(str).trim();
+                if(/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+                    const [y, m, d] = s.split('-').map(Number);
+                    return new Date(y, m-1, d);
+                }
+                if(/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+                    const [d, m, y] = s.split('/').map(Number);
+                    return new Date(y, m-1, d);
+                }
+                // Fallback try Date constructor
+                const d = new Date(s);
+                return isNaN(d.getTime()) ? null : d;
+            };
+
+            const fmtDayMonth = (d) => String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
+            const calcAge = (dob) => {
+                if(!dob) return '';
+                let age = now.getFullYear() - dob.getFullYear();
+                const mdiff = now.getMonth() - dob.getMonth();
+                if(mdiff < 0 || (mdiff === 0 && now.getDate() < dob.getDate())) age--;
+                return age;
+            };
+
+            const nextBirthday = (dob) => {
+                if(!dob) return null;
+                const nb = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+                if(nb < new Date(now.getFullYear(), now.getMonth(), now.getDate())) {
+                    return new Date(now.getFullYear()+1, dob.getMonth(), dob.getDate());
+                }
+                return nb;
+            };
+
+            const toCard = (p) => {
+                const polo = mapToOfficialPolo(p.polo || 'SEM POLO');
+                const dob = parseDob(p.dataNascimento);
+                const age = p.idade || calcAge(dob);
+                const dstr = dob ? fmtDayMonth(dob) : '-';
+                return `<div class="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 text-white flex items-center justify-center font-bold">${String(p.nome || '?').trim().charAt(0)}</div>
+                    <div class="flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="font-bold text-gray-800 text-lg">${(p.nome || '').toUpperCase()}</span>
+                            <span class="text-xs px-2 py-0.5 bg-pink-50 text-pink-700 rounded-full border border-pink-200">${polo}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">Aniversário: <b>${dstr}</b> • Idade: <b>${age || '-'}</b> • Camisa: <b>${p.camisa || '-'}</b></div>
+                    </div>
+                    <a href="${getWhatsappLink(p.telefone)}" target="_blank" class="btn btn-secondary text-xs"><i data-lucide="message-square" class="w-4 h-4"></i> Parabenizar</a>
+                </div>`;
+            };
+
+            const todays = [];
+            const inMonth = [];
+            const upcoming = [];
+
+            allData.forEach(p => {
+                const dob = parseDob(p.dataNascimento);
+                if(!dob) return;
+                const d = dob.getDate();
+                const m = dob.getMonth();
+                if(m === todayMonth && d === todayDay) todays.push(p);
+                if(m === todayMonth) inMonth.push(p);
+                const nb = nextBirthday(dob);
+                if(nb) {
+                    const diffDays = Math.round((nb - now) / (1000*60*60*24));
+                    if(diffDays > 0 && diffDays <= 30) upcoming.push({ ...p, _nbDays: diffDays });
+                }
+            });
+
+            // Sort for better organization
+            inMonth.sort((a,b) => parseDob(a.dataNascimento) - parseDob(b.dataNascimento));
+            upcoming.sort((a,b) => a._nbDays - b._nbDays);
+
+            todayEl.innerHTML = todays.length
+                ? todays.map(toCard).join('')
+                : `<div class="text-gray-600">Nenhum aniversário hoje.</div>`;
+            monthEl.innerHTML = inMonth.length
+                ? `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${inMonth.map(toCard).join('')}</div>`
+                : `<div class="text-gray-600">Nenhum aniversário neste mês.</div>`;
+            upcomingEl.innerHTML = upcoming.length
+                ? `<div class="space-y-2">${upcoming.map(p => {
+                        const card = toCard(p);
+                        return card.replace('</div></div>', `<div class=\"text-xs text-gray-500\">Em ${p._nbDays} dias</div></div></div>`);
+                    }).join('')}</div>`
+                : `<div class="text-gray-600">Sem próximos aniversários nos próximos 30 dias.</div>`;
+
+            if(window.lucide) lucide.createIcons();
         }
 
         function renderDashboard() {
@@ -1839,7 +2048,8 @@
             // Mapeamento manual para garantir que pegamos tudo
             const fields = ['nome', 'cpf', 'rg', 'dataNascimento', 'idade', 'sexo', 'camisa', 'telefone', 
                             'polo', 'cep', 'endereco', 'bairro', 'numero', 'cidade', 
-                            'profissao', 'estadoCivil', 'zona', 'tipoSanguineo', 'inscricao', 'status'];
+                            'profissao', 'estadoCivil', 'zona', 'tipoSanguineo', 'inscricao', 'status',
+                            'tituloEleitor', 'secaoEleitoral'];
             
             fields.forEach(f => {
                 const el = document.getElementById(`edit-${f}`);
@@ -1930,7 +2140,7 @@
         // ===========================================
         // RELATÓRIOS (Traduzido e Filtrado)
         // ===========================================
-        document.getElementById('generate-report-btn').addEventListener('click', () => {
+            document.getElementById('generate-report-btn').addEventListener('click', () => {
             const st = document.getElementById('report-status-filter').value;
             const polo = document.getElementById('report-polo-filter').value;
             const sh = document.getElementById('report-camisa-filter').value;
@@ -1945,7 +2155,7 @@
                 // --- Correção da Lógica de Filtro de Polo ---
                 // Se o filtro não for "todos", normaliza o dado do banco para comparar com o filtro normalizado
                 if(polo !== 'all') {
-                    const itemPolo = normalizeText(i.polo || "SEM POLO");
+                    const itemPolo = mapToOfficialPolo(i.polo || "SEM POLO");
                     if(itemPolo !== polo) return false;
                 }
                 
